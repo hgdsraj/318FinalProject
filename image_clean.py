@@ -5,7 +5,7 @@ import cv2
 from skimage.color import rgb2grey
 from pyspark.sql import SparkSession, functions, types, Row
 from pyspark.sql.types import StructType, StructField, ArrayType, StringType, LongType
-
+import json
 schema = StructType([
     StructField('time',StringType(),True),
     StructField("image",ArrayType(LongType()),False)
@@ -51,16 +51,24 @@ def main():
     schema = types.StructType([types.StructField(i, types.StringType(), False) for i in schema_lines])
     schema_file.close()
     weather = spark.read.csv(sys.argv[3], schema=schema)#.withColumn('filename', functions.input_file_name())
-    df = spark.createDataFrame([], schema)
+    #df = spark.createDataFrame([], schema)
+    try:
+        os.makedirs(os.path.dirname('{}/'.format('katkam-json')))
+    except Exception as e:
+        print(e)
 
     # Read a single image from katkam-scaled folder, use spark later
     for filename in glob.glob('{}/*.jpg'.format(sys.argv[1])):
         img = cv2.imread(filename, 0).flatten().tolist()
-        img_row =Row(time=path_to_time(filename), image=img)
+        with open('katkam-json/{}'.format(os.path.splitext(filename)[0][-21:]), 'w') as fp:
+            json.dump({'time':path_to_time(filename), 'image': img}, fp)
         #images.append(img_row)
-        df = df.union(img_row)
+        #img_row =Row(time=path_to_time(filename), image=img)
 
-    # df = spark.createDataFrame(images)
+        #df = df.union(img_row)
+
+    #df = spark.createDataFrame(images)
+    df = spark.read.json('katkam-json')
     df.show()
 
     df = df.select(df['time'].alias('Date/Time'), df['image'])
