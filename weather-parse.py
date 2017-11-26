@@ -9,18 +9,6 @@ spark = SparkSession.builder.appName('reddit averages').getOrCreate()
 assert sys.version_info >= (3, 4) # make sure we have Python 3.4+
 assert spark.version >= '2.1' # make sure we have Spark 2.1+
 
-
-schema = types.StructType([ # commented-out fields won't be read
-    types.StructField('language', types.StringType(), False),
-    types.StructField('name', types.StringType(), False),
-    types.StructField('requests', types.LongType(), False),
-    types.StructField('views', types.LongType(), False),
-])
-
-def path_to_hour(path):
-    #https://stackoverflow.com/questions/678236/how-to-get-the-filename-without-the-extension-from-a-path-in-python
-    return os.path.splitext(path)[0][-15:-4]
-
 def remove_legend_create_temp(directory):
     tempdir = 'tempdir'
 
@@ -43,6 +31,7 @@ def remove_legend_create_temp(directory):
     return headers, [i.strip()[1:-1] for i in column_names.split(',')], tempdir
 
 def create_schema(column_names):
+    # this is probably what we want, but it did not work:
     # date = {"Date/Time"}
     # numbers = {"Temp (°C)","Dew Point Temp (°C)","Rel Hum (%)","Wind Dir (10s deg)","Wind Spd (km/h)","Visibility (km)","Stn Press (kPa)","Hmdx","Wind Chill"}
     # #strings = {"Data Quality", "Wind Chill Flag","Temp Flag","Dew Point Temp Flag","Rel Hum Flag","Wind Dir Flag","Wind Spd Flag","Visibility Flag","Stn Press Flag","Hmdx Flag","Weather"}
@@ -77,37 +66,6 @@ def main(in_directory, out_path):
     )
     weather.show()
 
-    # page_data = page_data.filter(page_data['language'] == 'en')
-    # page_data = page_data.filter(page_data['name'] != 'Main_Page')
-    # page_data = page_data.filter(~page_data['name'].startswith('Special:'))
-    #
-    # filt_path = functions.UserDefinedFunction(lambda x: path_to_hour(x), types.StringType())
-    # page_data = page_data.select(
-    #     page_data['language'],
-    #     page_data['name'],
-    #     page_data['requests'],
-    #     page_data['views'],
-    #     filt_path(page_data['filename']).alias("hour")
-    # )
-    # page_data.cache()
-    # hour_grouped = page_data.groupBy("hour").agg(functions.max("views"))
-    # hour_grouped = hour_grouped.select(
-    #     hour_grouped['hour'],
-    #     hour_grouped['max(views)'].alias('views')
-    # )
-    # #hour_grouped.show()
-    # #page_data.show()
-    #
-    # page_data = page_data.join(hour_grouped, ["hour", "views"])
-    #
-    # page_data = page_data.select(
-    #     page_data['hour'],
-    #     page_data['name'],
-    #     page_data['views']
-    # )
-    # page_data = page_data.orderBy(functions.asc("hour"), functions.desc("name"))
-    #
-    # page_data.show()
 
     weather.write.csv(out_path, mode='overwrite')
     with open('schema', 'w+') as schema_out:
@@ -115,7 +73,8 @@ def main(in_directory, out_path):
     with open('header', 'w+') as header:
         header.writelines(headers)
 
-    shutil.rmtree(directory)
+    shutil.rmtree(directory) #remove tempdir
+
 if __name__=='__main__':
     in_directory = sys.argv[1]
     out_path = sys.argv[2]
