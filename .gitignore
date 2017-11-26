@@ -11,6 +11,8 @@ cleaned-weather
 cleaned-weather/*
 cleaned-katkam
 cleaned-katkam/*
+weather-predictions
+weather-predictions/*
 *.so
 # Distribution / packaging
 .Python
