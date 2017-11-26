@@ -1,10 +1,9 @@
 import sys
-# from pyspark.sql import SparkSession, functions, types
 import numpy as np
 import cv2
 import shutil
 from skimage.color import rgb2grey
-from pyspark.sql import SparkSession, functions, types, Row
+from pyspark.sql import SparkSession, functions, types
 import json
 import os
 import glob
@@ -31,7 +30,7 @@ def main():
     schema = types.StructType([types.StructField(i, types.StringType(), False) for i in schema_lines])
     schema_file.close()
     weather = spark.read.csv(sys.argv[3], schema=schema)  # .withColumn('filename', functions.input_file_name())
-    
+
     df = spark.read.json('cleaned-katkam')
 
 
