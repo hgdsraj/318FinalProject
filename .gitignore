@@ -48,7 +48,8 @@ nosetests.xml
 coverage.xml
 *,cover
 .hypothesis/
-
+katkam-scaled
+katkam-scaled/*
 # Translations
 *.mo
 *.pot
