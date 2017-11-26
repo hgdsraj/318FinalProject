@@ -53,14 +53,14 @@ def create_schema(column_names):
 def main(in_directory, out_path):
     headers, column_names, directory = remove_legend_create_temp(in_directory)
     schema = create_schema(column_names)
-    print(headers)
-    print(schema)
+    # print(headers)
+    # print(schema)
     weather = spark.read.csv(directory, schema=schema)#.withColumn('filename', functions.input_file_name())
-    print(weather.schema)
+    # print(weather.schema)
     weather = weather[weather['Weather'] != 'NA']
-    weather.show()
+    # weather.show()
     weather_columns = [i for i in weather.schema.names if 'Flag' not in i]
-    print(weather_columns)
+    # print(weather_columns)
     weather = weather.select(
         weather_columns
     )
