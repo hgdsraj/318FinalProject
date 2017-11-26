@@ -4,6 +4,18 @@ import numpy as np
 import cv2
 from skimage.color import rgb2grey
 from pyspark.sql import SparkSession, functions, types, Row
+from pyspark.sql.types import StructType, StructField, ArrayType, StringType, LongType
+
+schema = StructType([
+    StructField('time',StringType(),True),
+    StructField("image",ArrayType(LongType()),False)
+])
+#https://stackoverflow.com/questions/31477598/how-to-create-an-empty-dataframe-with-a-specified-schema
+
+# or df = sc.parallelize([]).toDF(schema)
+
+# Spark < 2.0
+# sqlContext.createDataFrame([], schema)
 
 spark = SparkSession.builder.appName('Weather Image Classifier').getOrCreate()
 
@@ -39,17 +51,22 @@ def main():
     schema = types.StructType([types.StructField(i, types.StringType(), False) for i in schema_lines])
     schema_file.close()
     weather = spark.read.csv(sys.argv[3], schema=schema)#.withColumn('filename', functions.input_file_name())
+    df = spark.createDataFrame([], schema)
 
     # Read a single image from katkam-scaled folder, use spark later
     for filename in glob.glob('{}/*.jpg'.format(sys.argv[1])):
-        img = rgb2grey(cv2.imread(filename)).tolist()
-        images.append(Row(time=path_to_time(filename), image=flatten(img)))
-    df = spark.createDataFrame(images)
+        img = cv2.imread(filename, 0).flatten().tolist()
+        img_row =Row(time=path_to_time(filename), image=img)
+        #images.append(img_row)
+        df = df.union(img_row)
+
+    # df = spark.createDataFrame(images)
     df.show()
 
     df = df.select(df['time'].alias('Date/Time'), df['image'])
     df = weather.join(df, 'Date/Time')
     df = df.select(df['Date/Time'], df['image'])
+    print(df.schema)
     df.show()
 
     df.write.json(sys.argv[2], mode='overwrite')
