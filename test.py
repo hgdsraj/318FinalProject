@@ -11,7 +11,7 @@ assert spark.version >= '2.2' # make sure we have Spark 2.2+
 # Load training data
 data = spark.read.format("libsvm") \
     .load("txtfile.txt")
-
+data.show()
 # Split the data into train and test
 splits = data.randomSplit([0.6, 0.4], 1234)
 train = splits[0]
