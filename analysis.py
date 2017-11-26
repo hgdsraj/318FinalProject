@@ -3,6 +3,9 @@ import sys
 import numpy as np
 import cv2
 import shutil
+from pyspark.ml.classification import NaiveBayes
+from pyspark.ml.evaluation import MulticlassClassificationEvaluator
+
 from skimage.color import rgb2grey
 from pyspark.sql import SparkSession, functions, types, Row
 from pyspark.sql.types import StructType, StructField, ArrayType, StringType, LongType
@@ -41,7 +44,19 @@ schema = types.StructType([
 
 def main():
     df = spark.read.json('cleaned-katkam')
-    df.show()
+    schema_file = open('schema')
+    schema_lines = [i.strip() for i in schema_file.readlines()]
+    schema = types.StructType([types.StructField(i, types.StringType(), False) for i in schema_lines])
+    schema_file.close()
+    weather = spark.read.csv('cleaned-weather', schema=schema)#.withColumn('filename', functions.input_file_name())
+    splits = df.randomSplit([0.6, 0.4], 1234)
+    train = splits[0]
+    test = splits[1]
+    nb = NaiveBayes(smoothing=1.0, modelType="multinomial")
+    model = nb.fit(train)
+
+    df = df.toPandas()
+    g = 2
 
 if __name__=='__main__':
     main()
