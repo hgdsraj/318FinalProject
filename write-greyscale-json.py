@@ -2,6 +2,7 @@ import sys
 # from pyspark.sql import SparkSession, functions, types
 import numpy as np
 import cv2
+import shutil
 from skimage.color import rgb2grey
 from pyspark.sql import SparkSession, functions, types, Row
 from pyspark.sql.types import StructType, StructField, ArrayType, StringType, LongType
@@ -79,6 +80,7 @@ def main():
 
     df.write.json(sys.argv[2], mode='overwrite')
 
+    shutil.rmtree('katkam-json') #remove tempdir
 
     print("wpow")
 
