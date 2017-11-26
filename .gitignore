@@ -6,8 +6,9 @@ __pycache__/
 *$py.class
 
 # C extensions
-*.so
+cleaned-weather
 cleaned-weather/*
+*.so
 # Distribution / packaging
 .Python
 env/
