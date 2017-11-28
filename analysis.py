@@ -40,7 +40,7 @@ def main():
     schema_file.close()
     weather = spark.read.csv('cleaned-weather', schema=schema)#.withColumn('filename', functions.input_file_name())
     df = df.join(weather, 'Date/Time')
-    #https://stackoverflow.com/questions/39025707/how-to-convert-arraytype-to-densevector-in-pyspark-dataframe
+    # https://stackoverflow.com/questions/39025707/how-to-convert-arraytype-to-densevector-in-pyspark-dataframe
     to_vec = functions.UserDefinedFunction(lambda vs: Vectors.dense(vs), VectorUDT())
     get_rid_of_rain = functions.UserDefinedFunction(lambda vs: rain_gone(vs), LongType())
 

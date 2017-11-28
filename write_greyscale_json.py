@@ -1,10 +1,8 @@
 import sys
-# from pyspark.sql import SparkSession, functions, types
 import numpy as np
 import cv2
 import shutil
-from skimage.color import rgb2grey
-from pyspark.sql import SparkSession, functions, types, Row
+from pyspark.sql import SparkSession, functions, types
 from pyspark.sql.types import StructType, StructField, ArrayType, StringType, LongType
 import json
 import os
@@ -24,6 +22,8 @@ spark = SparkSession.builder.appName('Weather Image Classifier').getOrCreate()
 
 assert sys.version_info >= (3, 4) # make sure we have Python 3.4+
 assert spark.version >= '2.2' # make sure we have Spark 2.2+
+
+in_directory = sys.argv[1]
 
 def path_to_time(path):
     timestamp = os.path.splitext(path)[0][-14:]
@@ -46,7 +46,7 @@ def main():
         print(e)
 
     # Read a single image from katkam-scaled folder, use spark later
-    for filename in glob.glob('{}/*.jpg'.format(sys.argv[1])):
+    for filename in glob.glob('{}/*.jpg'.format(in_directory)):
         img = cv2.imread(filename, 0).flatten().tolist()
         with open('katkam-json/{}'.format(os.path.splitext(filename)[0][-21:]), 'w') as fp:
             json.dump({'time':path_to_time(filename), 'image': img}, fp)
