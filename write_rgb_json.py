@@ -23,8 +23,9 @@ spark = SparkSession.builder.appName('Weather Image Classifier').getOrCreate()
 assert sys.version_info >= (3, 4) # make sure we have Python 3.4+
 assert spark.version >= '2.2' # make sure we have Spark 2.2+
 
-in_directory = sys.argv[1] # should be katkam-scaled
+katkam_in_directory = sys.argv[1] # should be katkam-scaled
 out_directory = sys.argv[2] # should be cleaned-katkam-rgb
+weather_in_directory = sys.argv[3] # should be cleaned-weather
 
 def path_to_time(path):
     timestamp = os.path.splitext(path)[0][-14:]
@@ -37,7 +38,7 @@ def main():
     schema_lines = [i.strip() for i in schema_file.readlines()]
     schema = types.StructType([types.StructField(i, types.StringType(), False) for i in schema_lines])
     schema_file.close()
-    weather = spark.read.csv(sys.argv[3], schema=schema)#.withColumn('filename', functions.input_file_name())
+    weather = spark.read.csv(weather_in_directory, schema=schema)#.withColumn('filename', functions.input_file_name())
     #df = spark.createDataFrame([], schema)
     try:
         os.makedirs(os.path.dirname('{}/'.format('katkam-json')))
@@ -45,7 +46,7 @@ def main():
         print(e)
 
     # Read images from katkam-scaled folder, write to json and then read into spark -> avoids memory issues
-    for filename in glob.glob('{}/*.jpg'.format(in_directory)):
+    for filename in glob.glob('{}/*.jpg'.format(katkam_in_directory)):
         img = cv2.imread(filename).flatten().tolist()
         with open('katkam-json/{}'.format(os.path.splitext(filename)[0][-21:]), 'w') as fp:
             json.dump({'time':path_to_time(filename), 'image': img}, fp)
