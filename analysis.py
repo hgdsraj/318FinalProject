@@ -23,6 +23,10 @@ schema = StructType([
 # Spark < 2.0
 # sqlContext.createDataFrame([], schema)
 
+katkam_in_directory = sys.argv[1]
+weather_in_directory = sys.argv[2]
+# out_directory = sys.argv[3]
+
 spark = SparkSession.builder.appName('Weather Image Classifier').getOrCreate()
 
 assert sys.version_info >= (3, 4) # make sure we have Python 3.4+
@@ -33,12 +37,12 @@ def rain_gone(vs):
 
 
 def main():
-    df = spark.read.json('cleaned-katkam')
+    df = spark.read.json(katkam_in_directory)
     schema_file = open('schema')
     schema_lines = [i.strip() for i in schema_file.readlines()]
     schema = types.StructType([types.StructField(i, types.StringType(), False) for i in schema_lines])
     schema_file.close()
-    weather = spark.read.csv('cleaned-weather', schema=schema)#.withColumn('filename', functions.input_file_name())
+    weather = spark.read.csv(weather_in_directory, schema=schema)#.withColumn('filename', functions.input_file_name())
     df = df.join(weather, 'Date/Time')
     # https://stackoverflow.com/questions/39025707/how-to-convert-arraytype-to-densevector-in-pyspark-dataframe
     to_vec = functions.UserDefinedFunction(lambda vs: Vectors.dense(vs), VectorUDT())
