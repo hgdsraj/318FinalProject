@@ -51,7 +51,7 @@ def main():
         with open('katkam-json/{}'.format(os.path.splitext(filename)[0][-21:]), 'w') as fp:
             json.dump({'time':path_to_time(filename), 'image': img}, fp)
         #images.append(img_row)
-        #img_row =Row(time=path_to_time(filename), image=img)
+        #img_row = Row(time=path_to_time(filename), image=img)
 
         #df = df.union(img_row)
 
