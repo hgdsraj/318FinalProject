@@ -23,9 +23,9 @@ schema = StructType([
 # Spark < 2.0
 # sqlContext.createDataFrame([], schema)
 
-katkam_in_directory = sys.argv[1]
-weather_in_directory = sys.argv[2]
-# out_directory = sys.argv[3]
+katkam_in_directory = sys.argv[1] # should be either cleaned-katkam-grayscale or cleaned-katkam-rgb
+weather_in_directory = sys.argv[2] # should be cleaned-weather
+# out_directory = sys.argv[3] # will decide later what output will be, will probably be predictions
 
 spark = SparkSession.builder.appName('Weather Image Classifier').getOrCreate()
 
