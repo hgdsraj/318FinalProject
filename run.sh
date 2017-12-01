@@ -8,6 +8,7 @@ setup() {
 }
 clean_weather() {
     hdfs dfs -mkdir tempdir
+    hdfs dfs -put yvr-weather yvr-weather
     spark-submit weather_parse.py yvr-weather cleaned-weather
     hdfs dfs -put schema schema
     hdfs dfs -put schema headers
@@ -55,19 +56,20 @@ do
 case $i in
     --no-setup)
     SETUP=0
-    shift # past argument=value
+    shift # passed argument=value
     ;;
     --no-clean-images)
     CLEAN_IMAGES=0
-    shift # past argument=value
+    shift # passed argument=value
     ;;
     --no-clean-weather)
     CLEAN_WEATHER=0
-    shift # past argument=value
+    shift # passed argument=value
     ;;
     --no-analyze)
+
     ANALYZE=0
-    shift # past argument with no value
+    shift # passed argument with no value
     ;;
     *)
           # unknown option
