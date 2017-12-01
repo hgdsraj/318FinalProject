@@ -13,8 +13,8 @@ cleaned-katkam
 cleaned-katkam/*
 cleaned-katkam-greyscale
 cleaned-katkam-greyscale/*
-katkam-greyscale-json/*
-katkam-greyscale-json
+katkam-greyscaled-json/*
+katkam-greyscaled-json
 tempdir
 tempdir/*
 cleaned-katkam-rgb

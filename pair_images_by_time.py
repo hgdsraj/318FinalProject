@@ -35,6 +35,11 @@ def path_to_time(path):
 def main():
     #df = spark.createDataFrame(images)
     df = spark.read.json(katkam_in_directory)
+
+    schema_file = open('schema')
+    schema_lines = [i.strip() for i in schema_file.readlines()]
+    schema = types.StructType([types.StructField(i, types.StringType(), False) for i in schema_lines])
+    schema_file.close()
     weather = spark.read.csv(weather_in_directory, schema=schema)#.withColumn('filename', functions.input_file_name())
 
     df = df.select(df['time'].alias('Date/Time'), df['image'])

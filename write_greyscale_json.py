@@ -19,11 +19,14 @@ def main():
         print(e)
 
     # Read images from katkam-scaled folder, write to json and then read into spark -> avoids memory issues
-    for filename in glob.glob('{}/*.jpg'.format(katkam_in_directory)):
+    in_folder = glob.glob('{}/*.jpg'.format(katkam_in_directory))
+    count = len(in_folder)
+    for filename in in_folder:
+        print(count)
         img = cv2.imread(filename, 0).flatten().tolist()
         with open('{}/{}'.format(out_dir, os.path.splitext(filename)[0][-21:]), 'w') as fp:
             json.dump({'time':path_to_time(filename), 'image': img}, fp)
-
+        count -= 1
 
 if __name__=='__main__':
     main()
