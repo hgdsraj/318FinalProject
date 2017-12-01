@@ -32,6 +32,9 @@ spark = SparkSession.builder.appName('Weather Image Classifier - Data Analysis')
 assert sys.version_info >= (3, 4) # make sure we have Python 3.4+
 assert spark.version >= '2.2' # make sure we have Spark 2.2+
 
+cleaned_katkam = sys.argv[1] # 'cleaned-katkam'
+cleaned_weather = sys.argv[2] # 'cleaned-weather'
+
 def rain_gone(vs):
     return 0 if 'Rain' in vs else 1
 
@@ -43,7 +46,9 @@ def main():
     schema = types.StructType([types.StructField(i, types.StringType(), False) for i in schema_lines])
     schema_file.close()
     weather = spark.read.csv(weather_in_directory, schema=schema)#.withColumn('filename', functions.input_file_name())
+
     df = df.join(weather, 'Date/Time')
+
     # https://stackoverflow.com/questions/39025707/how-to-convert-arraytype-to-densevector-in-pyspark-dataframe
     to_vec = functions.UserDefinedFunction(lambda vs: Vectors.dense(vs), VectorUDT())
     get_rid_of_rain = functions.UserDefinedFunction(lambda vs: rain_gone(vs), LongType())
