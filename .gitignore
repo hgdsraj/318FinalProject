@@ -11,8 +11,12 @@ cleaned-weather
 cleaned-weather/*
 cleaned-katkam
 cleaned-katkam/*
-cleaned-katkam-grayscale
-cleaned-katkam-grayscale/*
+cleaned-katkam-greyscale
+cleaned-katkam-greyscale/*
+katkam-greyscale-json/*
+katkam-greyscale-json
+tempdir
+tempdir/*
 cleaned-katkam-rgb
 cleaned-katkam-rgb/*
 weather-predictions
