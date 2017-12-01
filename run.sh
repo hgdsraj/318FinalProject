@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# sysinfo_page - A script to produce a system information HTML file
-
-##### Constants
-USER=rmahey
 setup() {
     export PYSPARK_PYTHON=python3
     module load 318
