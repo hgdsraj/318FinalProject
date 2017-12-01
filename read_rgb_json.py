@@ -7,7 +7,7 @@ schema = types.StructType([
     types.StructField("image", types.ArrayType(types.LongType()),False)
 ])
 
-spark = SparkSession.builder.appName('Weather ELT - Clean Image Data').getOrCreate()
+spark = SparkSession.builder.appName('Weather ETL - Clean Image Data').getOrCreate()
 
 assert sys.version_info >= (3, 4) # make sure we have Python 3.4+
 assert spark.version >= '2.2' # make sure we have Spark 2.2+
