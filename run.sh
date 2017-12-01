@@ -9,12 +9,18 @@ setup() {
 clean_weather() {
     hdfs dfs -put yvr-weather yvr-weather
 
-    spark-submit weather_setup.py yvr-weather cleaned-weather tempdir
+    python3 weather_setup.py yvr-weather cleaned-weather tempdir
     hdfs dfs -put tempdir tempdir
     hdfs dfs -put schema schema
     hdfs dfs -put headers headers
     spark-submit weather_parse.py yvr-weather cleaned-weather tempdir
+    hdfs dfs -rm schema
     hdfs dfs -put schema schema
+
+}
+
+remove_all() {
+    hdfs dfs -rm -r -f cleaned-katkam-greyscale cleaned-weather headers katkam-greyscaled-json schema tempdir yvr-weather
 
 }
 

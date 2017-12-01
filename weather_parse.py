@@ -1,8 +1,6 @@
 import sys
-import os
-import glob
 import shutil
-from pyspark.sql import SparkSession, functions, types
+from pyspark.sql import SparkSession, types
 
 spark = SparkSession.builder.appName('Weather ETL').getOrCreate()
 
