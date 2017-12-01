@@ -7,11 +7,14 @@ setup() {
 
 }
 clean_weather() {
-    hdfs dfs -mkdir tempdir
     hdfs dfs -put yvr-weather yvr-weather
-    spark-submit weather_parse.py yvr-weather cleaned-weather
+
+    spark-submit weather_setup.py yvr-weather cleaned-weather tempdir
+    hdfs dfs -put tempdir tempdir
     hdfs dfs -put schema schema
-    hdfs dfs -put schema headers
+    hdfs dfs -put headers headers
+    spark-submit weather_parse.py yvr-weather cleaned-weather tempdir
+    hdfs dfs -put schema schema
 
 }
 
