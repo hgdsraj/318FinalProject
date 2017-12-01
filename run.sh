@@ -17,6 +17,7 @@ clean_weather() {
     hdfs dfs -put schema headers
 
 }
+
 write_greyscale_json() {
     python3 write_greyscale_json.py katkam-scaled katkam-greyscaled-json
 }
@@ -49,26 +50,27 @@ home_space()
 
 }   # end of home_space
 
-SETUP=0
-
-
+SETUP=1
+CLEAN_WEATHER=1
+CLEAN_IMAGES=1
+ANALYZE=1
 for i in "$@"
 do
 case $i in
-    -s=*|--setup=*)
-    EXTENSION="${i#*=}"
+    --no-setup)
+    SETUP=0
     shift # past argument=value
     ;;
-    -s=*|--searchpath=*)
-    SEARCHPATH="${i#*=}"
+    --no-clean-images)
+    CLEAN_IMAGES=0
     shift # past argument=value
     ;;
-    -l=*|--lib=*)
-    LIBPATH="${i#*=}"
+    --no-clean-weather)
+    CLEAN_WEATHER=0
     shift # past argument=value
     ;;
-    --default)
-    DEFAULT=YES
+    --no-analyze)
+    ANALYZE=0
     shift # past argument with no value
     ;;
     *)
@@ -76,12 +78,21 @@ case $i in
     ;;
 esac
 done
-    if [ SETUP=0 ]; then
-        echo "<h2>Home directory space by user</h2>"
-        echo "<pre>"
-        echo "Bytes Directory"
-        du -s /home/* | sort -nr
-        echo "</pre>"
-    fi
+if [ SETUP=1 ]; then
+    setup
+fi
 
+if [ CLEAN_WEATHER=1 ]; then
+    setup
+fi
+
+if [ CLEAN_IMAGES=1 ]; then
+    write_greyscale_json
+    put_katkam_with_time
+    add_time_to_image
+fi
+
+if [ ANALYZE=1 ]; then
+    analyze
+fi
 
