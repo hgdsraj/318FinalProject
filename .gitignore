@@ -108,8 +108,6 @@ cleaned-katkam-greyscale
 cleaned-katkam-greyscale/*
 cleaned-katkam-rgb
 cleaned-katkam-rgb/*
-cleaned-katkam-rgb
-cleaned-katkam-rgb/*
 katkam-rgb-json
 katkam-rgb-json/*
 katkam-greyscaled-json
