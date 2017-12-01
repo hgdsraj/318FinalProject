@@ -1,12 +1,12 @@
 import sys
-# from pyspark.sql import SparkSession, functions, types
 import numpy as np
 import cv2
 import shutil
-from skimage.color import rgb2grey
-from pyspark.sql import SparkSession, functions, types, Row
+from pyspark.sql import SparkSession, functions, types
 from pyspark.sql.types import StructType, StructField, ArrayType, StringType, LongType
 import json
+import os
+import glob
 schema = StructType([
     StructField('time',StringType(),True),
     StructField("image",ArrayType(LongType()),False)
@@ -23,21 +23,10 @@ spark = SparkSession.builder.appName('Weather Image Classifier').getOrCreate()
 assert sys.version_info >= (3, 4) # make sure we have Python 3.4+
 assert spark.version >= '2.2' # make sure we have Spark 2.2+
 
-import os
-import glob
-'''
-spark = SparkSession.builder.appName('weather classification').getOrCreate()
+katkam_in_directory = sys.argv[1] # should be katkam-scaled
+out_directory = sys.argv[2] # should be cleaned-katkam-grayscale
+weather_in_directory = sys.argv[3] # should be cleaned-weather
 
-assert sys.version_info >= (3, 4)  # make sure we have Python 3.4+
-assert spark.version >= '2.1'  # make sure we have Spark 2.1+
-
-# Placeholder schema based on exercise 11
-schema = types.StructType([
-    types.StructField('score', types.LongType(), False),
-    #types.StructField('score_hidden', types.BooleanType(), False),
-    types.StructField('subreddit', types.StringType(), False),
-])
-'''
 def path_to_time(path):
     timestamp = os.path.splitext(path)[0][-14:]
     #2017-05-01 16:00
@@ -45,21 +34,19 @@ def path_to_time(path):
 
 def main():
     images = []
-    #https://stackoverflow.com/questions/952914/making-a-flat-list-out-of-list-of-lists-in-python
-    flatten = lambda l: [item for sublist in l for item in sublist]
     schema_file = open('schema')
     schema_lines = [i.strip() for i in schema_file.readlines()]
     schema = types.StructType([types.StructField(i, types.StringType(), False) for i in schema_lines])
     schema_file.close()
-    weather = spark.read.csv(sys.argv[3], schema=schema)#.withColumn('filename', functions.input_file_name())
+    weather = spark.read.csv(weather_in_directory, schema=schema)#.withColumn('filename', functions.input_file_name())
     #df = spark.createDataFrame([], schema)
     try:
         os.makedirs(os.path.dirname('{}/'.format('katkam-json')))
     except Exception as e:
         print(e)
 
-    # Read a single image from katkam-scaled folder, use spark later
-    for filename in glob.glob('{}/*.jpg'.format(sys.argv[1])):
+    # Read images from katkam-scaled folder, write to json and then read into spark -> avoids memory issues
+    for filename in glob.glob('{}/*.jpg'.format(katkam_in_directory)):
         img = cv2.imread(filename, 0).flatten().tolist()
         with open('katkam-json/{}'.format(os.path.splitext(filename)[0][-21:]), 'w') as fp:
             json.dump({'time':path_to_time(filename), 'image': img}, fp)
@@ -78,11 +65,10 @@ def main():
     print(df.schema)
     df.show()
 
-    df.write.json(sys.argv[2], mode='overwrite')
+    df.write.json(out_directory, mode='overwrite')
 
     shutil.rmtree('katkam-json') #remove tempdir
 
-    print("wpow")
 
 
 if __name__=='__main__':

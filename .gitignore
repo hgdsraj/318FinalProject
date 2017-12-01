@@ -11,6 +11,10 @@ cleaned-weather
 cleaned-weather/*
 cleaned-katkam
 cleaned-katkam/*
+cleaned-katkam-grayscale
+cleaned-katkam-grayscale/*
+cleaned-katkam-rgb
+cleaned-katkam-rgb/*
 weather-predictions
 weather-predictions/*
 *.so
