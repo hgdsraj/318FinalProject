@@ -78,21 +78,21 @@ case $i in
     ;;
 esac
 done
-if [ SETUP=1 ]; then
+if [ SETUP = 1 ]; then
     setup
 fi
 
-if [ CLEAN_WEATHER=1 ]; then
+if [ CLEAN_WEATHER = 1 ]; then
     setup
 fi
 
-if [ CLEAN_IMAGES=1 ]; then
+if [ CLEAN_IMAGES = 1 ]; then
     write_greyscale_json
     put_katkam_with_time
     add_time_to_image
 fi
 
-if [ ANALYZE=1 ]; then
+if [ ANALYZE = 1 ]; then
     analyze
 fi
 
