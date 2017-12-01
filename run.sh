@@ -12,7 +12,6 @@ clean_weather() {
     spark-submit weather_parse.py yvr-weather cleaned-weather
     hdfs dfs -put schema schema
     hdfs dfs -put schema headers
-
 }
 
 write_katkam_json_greyscale() {
