@@ -4,7 +4,7 @@ import glob
 import shutil
 from pyspark.sql import SparkSession, functions, types
 
-spark = SparkSession.builder.appName('Weather ETL').getOrCreate()
+spark = SparkSession.builder.appName('Weather ETL - Clean Weather Data').getOrCreate()
 
 assert sys.version_info >= (3, 4) # make sure we have Python 3.4+
 assert spark.version >= '2.1' # make sure we have Spark 2.1+
@@ -33,7 +33,7 @@ def remove_legend_create_temp(directory):
 def create_schema(column_names):
     # this is probably what we want, but it did not work:
     # date = {"Date/Time"}
-    # numbers = {"Temp (°C)","Dew Point Temp (°C)","Rel Hum (%)","Wind Dir (10s deg)","Wind Spd (km/h)","Visibility (km)","Stn Press (kPa)","Hmdx","Wind Chill"}
+    # numbers = {"Temp (C)","Dew Point Temp (C)","Rel Hum (%)","Wind Dir (10s deg)","Wind Spd (km/h)","Visibility (km)","Stn Press (kPa)","Hmdx","Wind Chill"}
     # #strings = {"Data Quality", "Wind Chill Flag","Temp Flag","Dew Point Temp Flag","Rel Hum Flag","Wind Dir Flag","Wind Spd Flag","Visibility Flag","Stn Press Flag","Hmdx Flag","Weather"}
     # typefields = []
     # for i in column_names:
@@ -76,6 +76,6 @@ def main(in_directory, out_path):
     shutil.rmtree(directory) #remove tempdir
 
 if __name__=='__main__':
-    in_directory = sys.argv[1]
-    out_path = sys.argv[2]
+    in_directory = sys.argv[1] # should be yvr-weather
+    out_path = sys.argv[2] # cleaned-weather
     main(in_directory, out_path)
