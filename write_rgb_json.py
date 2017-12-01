@@ -1,25 +1,8 @@
 import sys
 import cv2
-from pyspark.sql import SparkSession, functions, types
-from pyspark.sql.types import StructType, StructField, ArrayType, StringType, LongType
 import json
 import os
 import glob
-schema = StructType([
-    StructField('time',StringType(),True),
-    StructField("image",ArrayType(LongType()),False)
-])
-#https://stackoverflow.com/questions/31477598/how-to-create-an-empty-dataframe-with-a-specified-schema
-
-# or df = sc.parallelize([]).toDF(schema)
-
-# Spark < 2.0
-# sqlContext.createDataFrame([], schema)
-
-spark = SparkSession.builder.appName('Weather Image Classifier').getOrCreate()
-
-assert sys.version_info >= (3, 4) # make sure we have Python 3.4+
-assert spark.version >= '2.2' # make sure we have Spark 2.2+
 
 in_directory = sys.argv[1] # should be katkam-scaled
 out_directory = sys.argv[2] # should be katkam-rgb-json
