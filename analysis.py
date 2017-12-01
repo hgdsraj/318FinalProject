@@ -27,7 +27,7 @@ katkam_in_directory = sys.argv[1] # should be either cleaned-katkam-grayscale or
 weather_in_directory = sys.argv[2] # should be cleaned-weather
 # out_directory = sys.argv[3] # will decide later what output will be, will probably be predictions
 
-spark = SparkSession.builder.appName('Weather Image Classifier').getOrCreate()
+spark = SparkSession.builder.appName('Weather Image Classifier - Data Analysis').getOrCreate()
 
 assert sys.version_info >= (3, 4) # make sure we have Python 3.4+
 assert spark.version >= '2.2' # make sure we have Spark 2.2+

@@ -104,12 +104,16 @@ cleaned-weather
 cleaned-weather/*
 cleaned-katkam
 cleaned-katkam/*
-cleaned-katkam-grayscale
-cleaned-katkam-grayscale/*
+cleaned-katkam-greyscale
+cleaned-katkam-greyscale/*
 cleaned-katkam-rgb
 cleaned-katkam-rgb/*
 cleaned-katkam-rgb
 cleaned-katkam-rgb/*
+katkam-rgb-json
+katkam-rgb-json/*
+katkam-greyscaled-json
+katkam-greyscaled-json/*
 weather-predictions
 weather-predictions/*
 
