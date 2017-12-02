@@ -2,15 +2,10 @@ import sys
 import shutil
 from pyspark.sql import SparkSession, types
 
-spark = SparkSession.builder.appName('Weather ETL').getOrCreate()
+spark = SparkSession.builder.appName('Weather ETL - Clean Weather Data').getOrCreate()
 
 assert sys.version_info >= (3, 4) # make sure we have Python 3.4+
 assert spark.version >= '2.1' # make sure we have Spark 2.1+
-
-
-
-
-
 
 def main(in_directory, out_path, tmpdir):
     directory = tmpdir
@@ -39,7 +34,7 @@ def main(in_directory, out_path, tmpdir):
     shutil.rmtree(directory) #remove tempdir
 
 if __name__=='__main__':
-    in_directory = sys.argv[1]
-    out_path = sys.argv[2]
+    in_directory = sys.argv[1] # should be yvr-weather
+    out_path = sys.argv[2] # cleaned-weather
     tmpdir = sys.argv[3]
     main(in_directory, out_path, tmpdir)

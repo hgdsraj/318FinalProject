@@ -5,7 +5,8 @@ import os
 import glob
 
 katkam_in_directory = sys.argv[1] # should be katkam-scaled
-out_dir = sys.argv[2] #shoudl be katkam-greyscaled-json
+out_directory = sys.argv[2] # should be katkam-<rgb/greyscaled>-json
+rgb_flag = sys.argv[3] #  should be a 1 for rgb or 0 for greyscale
 
 def path_to_time(path):
     timestamp = os.path.splitext(path)[0][-14:]
@@ -14,7 +15,7 @@ def path_to_time(path):
 
 def main():
     try:
-        os.makedirs(os.path.dirname('{}/'.format(out_dir)))
+        os.makedirs(os.path.dirname('{}/'.format(out_directory)))
     except Exception as e:
         print(e)
 
@@ -23,8 +24,8 @@ def main():
     count = len(in_folder)
     for filename in in_folder:
         print(count)
-        img = cv2.imread(filename, 0).flatten().tolist()
-        with open('{}/{}'.format(out_dir, os.path.splitext(filename)[0][-21:]), 'w') as fp:
+        img = cv2.imread(filename, int(rgb_flag)).flatten().tolist()
+        with open('{}/{}'.format(out_directory, os.path.splitext(filename)[0][-21:]), 'w') as fp:
             json.dump({'time':path_to_time(filename), 'image': img}, fp)
         count -= 1
 

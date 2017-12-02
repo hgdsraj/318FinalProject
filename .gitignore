@@ -1,27 +1,16 @@
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 katkam-min
 katkam-min/*
+
 # C extensions
-cleaned-weather
-cleaned-weather/*
-cleaned-katkam
-cleaned-katkam/*
-cleaned-katkam-greyscale
-cleaned-katkam-greyscale/*
-katkam-greyscaled-json/*
-katkam-greyscaled-json
-tempdir
-tempdir/*
-cleaned-katkam-rgb
-cleaned-katkam-rgb/*
-weather-predictions
-weather-predictions/*
 *.so
+
 # Distribution / packaging
 .Python
 env/
@@ -109,5 +98,21 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Project data
+cleaned-weather
+cleaned-weather/*
+cleaned-katkam
+cleaned-katkam/*
+cleaned-katkam-greyscale
+cleaned-katkam-greyscale/*
+cleaned-katkam-rgb
+cleaned-katkam-rgb/*
+katkam-rgb-json
+katkam-rgb-json/*
+katkam-greyscaled-json
+katkam-greyscaled-json/*
+weather-predictions
+weather-predictions/*
 
 .idea

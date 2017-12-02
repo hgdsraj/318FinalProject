@@ -21,11 +21,13 @@ clean_weather() {
 
 remove_all() {
     hdfs dfs -rm -r -f cleaned-katkam-greyscale cleaned-weather headers katkam-greyscaled-json schema tempdir yvr-weather
-
+}
+write_katkam_json_greyscale() {
+    python3 write_katkam_json.py katkam-scaled katkam-greyscaled-json 0
 }
 
-write_greyscale_json() {
-    python3 write_greyscale_json.py katkam-scaled katkam-greyscaled-json
+write_katkam_json_rgb() {
+    python3 write_katkam_json.py katkam-scaled katkam-rgb-json 1
 }
 
 put_katkam_with_time() {
@@ -63,6 +65,10 @@ ANALYZE=1
 for i in "$@"
 do
 case $i in
+    --no-color)
+    COLOR=0
+    shift # passed argument=value
+    ;;
     --no-setup)
     SETUP=0
     shift # passed argument=value
@@ -76,7 +82,6 @@ case $i in
     shift # passed argument=value
     ;;
     --no-analyze)
-
     ANALYZE=0
     shift # passed argument with no value
     ;;
@@ -94,9 +99,17 @@ if [ $CLEAN_WEATHER = 1 ]; then
 fi
 
 if [ $CLEAN_IMAGES = 1 ]; then
-    write_greyscale_json
-    put_katkam_with_time
-    add_time_to_image
+    if [ $COLOR = 1 ]; then
+        write_katkam_json_rgb
+        put_katkam_with_time
+        add_time_to_image
+    fi
+
+    if [ $COLOR = 0 ]; then
+        write_katkam_json_greyscale
+        put_katkam_with_time
+        add_time_to_image
+    fi
 fi
 
 if [ $ANALYZE = 1 ]; then
