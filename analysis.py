@@ -1,5 +1,5 @@
 import sys
-from pyspark.ml.classification import NaiveBayes
+from pyspark.ml.classification import NaiveBayes, LinearSVC, MultilayerPerceptronClassifier, LogisticRegression
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark.sql.column import _to_java_column, _to_seq, Column
 from pyspark import SparkContext
@@ -79,7 +79,8 @@ def main():
     splits = df.randomSplit([0.6, 0.4], 1234)
     train = splits[0]
     test = splits[1]
-    nb = NaiveBayes(smoothing=1.0, modelType="multinomial")
+    #nb = NaiveBayes(smoothing=1.0, modelType="multinomial")
+    nb = LogisticRegression()
     model = nb.fit(train)
     predictions = model.transform(test)
     predictions.show()
