@@ -4,17 +4,16 @@ from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark.sql.column import _to_java_column, _to_seq, Column
 from pyspark import SparkContext
 from pyspark.ml.linalg import Vectors, VectorUDT
-from pyspark.sql import SparkSession, functions, types, Row
-from pyspark.sql.types import StructType, StructField, StringType, LongType
+from pyspark.sql import SparkSession, functions, types
 
 def as_vector(col):
     sc = SparkContext.getOrCreate()
     f = sc._jvm.com.example.spark.udfs.udfs.as_vector()
     return Column(f.apply(_to_seq(sc, [col], _to_java_column)))
 
-schema = StructType([
-    StructField('Date/Time',StringType(),True),
-    StructField("image",VectorUDT(),False)
+schema = types.StructType([
+    types.StructField('Date/Time', types.StringType(),True),
+    types.StructField("image",VectorUDT(),False)
 ])
 #https://stackoverflow.com/questions/31477598/how-to-create-an-empty-dataframe-with-a-specified-schema
 
@@ -32,8 +31,8 @@ spark = SparkSession.builder.appName('Weather Image Classifier - Data Analysis')
 assert sys.version_info >= (3, 4) # make sure we have Python 3.4+
 assert spark.version >= '2.2' # make sure we have Spark 2.2+
 
-cleaned_katkam = sys.argv[1] # 'cleaned-katkam'
-cleaned_weather = sys.argv[2] # 'cleaned-weather'
+cleaned_katkam = sys.argv[1] # should be cleaned-katkam-<rgb/greyscale>
+cleaned_weather = sys.argv[2] # should be cleaned-weather
 def rain_gone(vs):
     label = 0
     if 'Clear' in vs:
