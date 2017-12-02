@@ -36,7 +36,7 @@ cleaned_katkam = sys.argv[1] # 'cleaned-katkam'
 cleaned_weather = sys.argv[2] # 'cleaned-weather'
 
 def rain_gone(vs):
-    return 'Rain' if 'Rain' in vs else 'Not Rain'
+    return 0 if 'Rain' in vs else 1
 
 
 def main():
