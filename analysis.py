@@ -68,7 +68,7 @@ def main():
     (trainingData, testData) = df.randomSplit([0.7, 0.3])
 
     # Train a DecisionTree model.
-    dt = LogisticRegression(labelCol="indexedLabel", featuresCol="indexedFeatures")
+    dt = DecisionTreeClassifier(labelCol="indexedLabel", featuresCol="indexedFeatures")
     pipeline = Pipeline(stages=[labelIndexer, featureIndexer, dt])
 
     model = pipeline.fit(trainingData)
