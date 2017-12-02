@@ -115,4 +115,34 @@ katkam-greyscaled-json/*
 weather-predictions
 weather-predictions/*
 
+# Sparkdl related stuff
+com
+com/*
+META-INF
+META-INF/*
+org
+org/*
+scala
+scala/*
+sparkdl
+sparkdl/*
+sparkimages
+sparkimages/*
+tensorframes
+tensorframes/*
+tensorframes_snippets
+tensorframes_snippets/*
+tests
+tests/*
+library.properties
+LICENSE-2.0.txt
+LICENSE_spark-images-0.1
+README_spark-images-0.1.md
+reflect.properties
+requirements.txt
+rootdoc.txt
+setup.py
+spark-deep-learning-assembly-0.2.0-spark2.1.jar
+
+
 .idea
