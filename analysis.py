@@ -68,7 +68,7 @@ def main():
     (trainingData, testData) = df.randomSplit([0.7, 0.3])
 
     # Train a DecisionTree model.
-    dt = DecisionTreeClassifier(labelCol="indexedLabel", featuresCol="indexedFeatures")
+    dt = LogisticRegression(labelCol="indexedLabel", featuresCol="indexedFeatures")
     pipeline = Pipeline(stages=[labelIndexer, featureIndexer, dt])
 
     model = pipeline.fit(trainingData)
@@ -82,7 +82,7 @@ def main():
     test = splits[1]
 
     # compute accuracy on the test set
-    evaluator = MulticlassClassificationEvaluator(labelCol="label", predictionCol="prediction",
+    evaluator = MulticlassClassificationEvaluator(labelCol="indexedLabel", predictionCol="prediction",
                                                   metricName="accuracy")
     accuracy = evaluator.evaluate(predictions)
     print("Test set accuracy = " + str(accuracy))
