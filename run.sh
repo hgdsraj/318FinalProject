@@ -33,12 +33,20 @@ write_katkam_json_rgb() {
     hdfs dfs -put katkam-rgb-json katkam-rgb-json
 }
 
-add_time_to_image() {
+add_time_to_image_greyscale() {
     spark-submit pair_images_by_time.py katkam-greyscaled-json cleaned-weather cleaned-katkam-greyscale
 }
 
-analyze() {
+add_time_to_image_rgb() {
+    spark-submit pair_images_by_time.py katkam-rgb-json cleaned-weather cleaned-rgb-greyscale
+}
+
+analyze_greyscale() {
     spark-submit analysis.py cleaned-katkam-greyscale cleaned-weather
+}
+
+analyze_rgb() {
+    spark-submit analysis.py cleaned-katkam-rgb cleaned-weather
 }
 
 CLEAN_DFS=0
@@ -94,16 +102,22 @@ fi
 if [ $CLEAN_IMAGES = 1 ]; then
     if [ $COLOR = 1 ]; then
         write_katkam_json_rgb
-        add_time_to_image
+        add_time_to_image_rgb
     fi
 
     if [ $COLOR = 0 ]; then
         write_katkam_json_greyscale
-        add_time_to_image
+        add_time_to_image_greyscale
     fi
 fi
 
 if [ $ANALYZE = 1 ]; then
-    analyze
+    if [ $COLOR = 1 ]; then
+        analyze_greyscale
+    fi
+
+    if [ $COLOR = 0 ]; then
+        analyze_rgb
+    fi
 fi
 
