@@ -77,7 +77,7 @@ def main():
     get_rid_of_rain = functions.UserDefinedFunction(lambda vs: rain_gone(vs), types.LongType())
 
     df = df.select(get_rid_of_rain(df['Weather']).alias('label'), to_vec(df['image']).alias('features'))
-    df.show()
+    df.show(); return
     print(df.schema)
 
     # Do KMeans clustering and data visualization
