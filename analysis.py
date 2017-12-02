@@ -1,10 +1,13 @@
 import sys
 from pyspark.ml.classification import NaiveBayes, LinearSVC, MultilayerPerceptronClassifier, LogisticRegression, OneVsRest
+from pyspark.ml.clustering import KMeans
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark.sql.column import _to_java_column, _to_seq, Column
 from pyspark import SparkContext
 from pyspark.ml.linalg import Vectors, VectorUDT
 from pyspark.sql import SparkSession, functions, types
+from pyspark.ml.feature import PCA
+import matplotlib.pyplot as plt
 
 def as_vector(col):
     sc = SparkContext.getOrCreate()
@@ -33,6 +36,7 @@ assert spark.version >= '2.2' # make sure we have Spark 2.2+
 
 cleaned_katkam = sys.argv[1] # should be cleaned-katkam-<rgb/greyscale>
 cleaned_weather = sys.argv[2] # should be cleaned-weather
+
 def rain_gone(vs):
     label = 0
     if 'Clear' in vs:
@@ -75,13 +79,30 @@ def main():
     df = df.select(get_rid_of_rain(df['Weather']).alias('label'), to_vec(df['image']).alias('features'))
     df.show()
     print(df.schema)
+
+    # Do KMeans clustering and data visualization
+    kmeans = KMeans(k=8, seed=1)
+    kmeans.fit(df)
+
+    # Principal Component Analysis
+    pca = PCA(k=5)
+    model = pca.fit(df)
+    result = model.transform(df).select("pcaFeatures")
+    result.show(truncate=False); return
+
+
+    # Do machine learning
     splits = df.randomSplit([0.6, 0.4], 1234)
     train = splits[0]
     test = splits[1]
-    #nb = NaiveBayes(smoothing=1.0, modelType="multinomial")
-    nb = LogisticRegression()
 
-    model = nb.fit(train)
+    # Naive Bayes Model
+    #nb = NaiveBayes(smoothing=1.0, modelType="multinomial")
+
+    # Logistic Regression Model
+    lr = LogisticRegression()
+
+    model = lr.fit(train)
     predictions = model.transform(test)
     predictions.show()
 
@@ -90,6 +111,8 @@ def main():
                                                   metricName="accuracy")
     accuracy = evaluator.evaluate(predictions)
     print("Test set accuracy = " + str(accuracy))
+
+
 
 if __name__=='__main__':
     main()
