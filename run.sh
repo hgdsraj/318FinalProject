@@ -25,14 +25,12 @@ remove_all() {
 
 write_katkam_json_greyscale() {
     python3 write_katkam_json.py katkam-scaled katkam-greyscaled-json 0
+    hdfs dfs -put katkam-greyscaled-json katkam-greyscaled-json
 }
 
 write_katkam_json_rgb() {
     python3 write_katkam_json.py katkam-scaled katkam-rgb-json 1
-}
-
-put_katkam_with_time() {
-    hdfs dfs -put katkam-greyscaled-json katkam-greyscaled-json
+    hdfs dfs -put katkam-rgb-json katkam-rgb-json
 }
 
 add_time_to_image() {
@@ -96,13 +94,11 @@ fi
 if [ $CLEAN_IMAGES = 1 ]; then
     if [ $COLOR = 1 ]; then
         write_katkam_json_rgb
-        put_katkam_with_time
         add_time_to_image
     fi
 
     if [ $COLOR = 0 ]; then
         write_katkam_json_greyscale
-        put_katkam_with_time
         add_time_to_image
     fi
 fi
