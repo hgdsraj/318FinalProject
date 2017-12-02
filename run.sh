@@ -38,7 +38,7 @@ add_time_to_image_greyscale() {
 }
 
 add_time_to_image_rgb() {
-    spark-submit pair_images_by_time.py katkam-rgb-json cleaned-weather cleaned-rgb-greyscale
+    spark-submit pair_images_by_time.py katkam-rgb-json cleaned-weather cleaned-katkam-rgb
 }
 
 analyze_greyscale() {
