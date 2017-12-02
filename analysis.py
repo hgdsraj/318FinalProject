@@ -43,13 +43,13 @@ cleaned_weather = sys.argv[2] # 'cleaned-weather'
 # All the labels:
 ## ['Cloudy', 'Rain Showers', 'Rain', 'Snow', 'Fog', 'Moderate Rain', 'Drizzle,Fog', 'Mostly Cloudy', 'Clear', 'Snow Showers', 'Mainly Clear', 'Rain,Drizzle', 'Drizzle']
 
-def compress_labels(label):
-    if label == 'Drizzle,Fog':
+def rain_gone(vs):
+    if vs == 'Drizzle,Fog':
         return 'Rain'
-    elif label == 'Rain,Drizzle':
+    elif vs == 'Rain,Drizzle':
         return 'Rain'
     else:
-        return label
+        return vs
 
 def main():
     df = spark.read.json(katkam_in_directory)
@@ -61,12 +61,11 @@ def main():
 
 
     df = df.join(weather, 'Date/Time')
-    df.show()
     # https://stackoverflow.com/questions/39025707/how-to-convert-arraytype-to-densevector-in-pyspark-dataframe
     to_vec = functions.UserDefinedFunction(lambda vs: Vectors.dense(vs), VectorUDT())
-    compress_labels = functions.UserDefinedFunction(lambda vs: compress_labels(vs), StringType())
+    get_rid_of_rain = functions.UserDefinedFunction(lambda vs: rain_gone(vs), StringType())
 
-    df = df.select(compress_labels(df['Weather']).alias('label'), to_vec(df['image']).alias('features'))
+    df = df.select(get_rid_of_rain(df['Weather']).alias('label'), to_vec(df['image']).alias('features'))
     df = StringIndexer(inputCol="label", outputCol="indexedLabel").fit(df).transform(df)
     df = df.select(df['indexedLabel'].alias('label'), df['features'])
     # Automatically identify categorical features, and index them.
