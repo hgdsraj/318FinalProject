@@ -77,7 +77,7 @@ def main():
     get_rid_of_rain = functions.UserDefinedFunction(lambda vs: rain_gone(vs), types.LongType())
 
     df = df.select(get_rid_of_rain(df['Weather']).alias('label'), to_vec(df['image']).alias('features'))
-    df.show(); return
+    df.show()
     print(df.schema)
 
     # Do KMeans clustering and data visualization
@@ -86,7 +86,7 @@ def main():
 
     # Principal Component Analysis
     pca = PCA(k=5)
-    model = pca.fit(df)
+    model = pca.fit(df, inputCol='features', outputCol='pcaFeatures')
     result = model.transform(df).select("pcaFeatures")
     result.show(truncate=False); return
 
