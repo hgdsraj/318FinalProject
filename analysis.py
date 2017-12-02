@@ -76,8 +76,7 @@ def main():
     df.show()
     print(df.schema)
 
-    nb = LogisticRegressionSummary()
-    nb = DecisionTreeClassifier()
+    nb = GBTClassifier()
     model = nb.fit(train)
     predictions = model.transform(test)
 
