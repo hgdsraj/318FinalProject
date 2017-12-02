@@ -48,12 +48,12 @@ def main():
     weather = spark.read.csv(weather_in_directory, schema=schema)#.withColumn('filename', functions.input_file_name())
 
     df = df.join(weather, 'Date/Time')
-
+    df.show()
     # https://stackoverflow.com/questions/39025707/how-to-convert-arraytype-to-densevector-in-pyspark-dataframe
     to_vec = functions.UserDefinedFunction(lambda vs: Vectors.dense(vs), VectorUDT())
     get_rid_of_rain = functions.UserDefinedFunction(lambda vs: rain_gone(vs), LongType())
 
-    df = df.select(get_rid_of_rain(df['weather']).alias('label'), to_vec(df['image']).alias('features'))
+    df = df.select(get_rid_of_rain(df['Weather']).alias('label'), to_vec(df['image']).alias('features'))
     df.show()
     print(df.schema)
     splits = df.randomSplit([0.6, 0.4], 1234)
