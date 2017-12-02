@@ -113,11 +113,11 @@ fi
 
 if [ $ANALYZE = 1 ]; then
     if [ $COLOR = 1 ]; then
-        analyze_greyscale
+        analyze_rgb
     fi
 
     if [ $COLOR = 0 ]; then
-        analyze_rgb
+        analyze_greyscale
     fi
 fi
 
