@@ -43,6 +43,14 @@ cleaned_weather = sys.argv[2] # 'cleaned-weather'
 # All the labels:
 ## ['Cloudy', 'Rain Showers', 'Rain', 'Snow', 'Fog', 'Moderate Rain', 'Drizzle,Fog', 'Mostly Cloudy', 'Clear', 'Snow Showers', 'Mainly Clear', 'Rain,Drizzle', 'Drizzle']
 
+def compress_labels(label):
+    if label == 'Drizzle,Fog':
+        return 'Rain'
+    elif label == 'Rain,Drizzle':
+        return 'Rain'
+    else:
+        return label
+
 def main():
     df = spark.read.json(katkam_in_directory)
     schema_file = open('schema')
@@ -56,33 +64,28 @@ def main():
     df.show()
     # https://stackoverflow.com/questions/39025707/how-to-convert-arraytype-to-densevector-in-pyspark-dataframe
     to_vec = functions.UserDefinedFunction(lambda vs: Vectors.dense(vs), VectorUDT())
+    compress_labels = functions.UserDefinedFunction(lambda vs: compress_labels(vs), StringType())
 
-    df = df.select(df['Weather'].alias('label'), to_vec(df['image']).alias('features'))
-    labelIndexer = StringIndexer(inputCol="label", outputCol="indexedLabel").fit(df)
+    df = df.select(compress_labels(df['Weather']).alias('label'), to_vec(df['image']).alias('features'))
+    df = StringIndexer(inputCol="label", outputCol="indexedLabel").fit(df).transform(df)
+    df = df.select(df['indexedLabel'].alias('label'), df['features'])
     # Automatically identify categorical features, and index them.
     # We specify maxCategories so features with > 4 distinct values are treated as continuous.
-    featureIndexer = \
-        VectorIndexer(inputCol="features", outputCol="indexedFeatures", maxCategories=4).fit(df)
-
+    df.show()
     # Split the data into training and test sets (30% held out for testing)
-    (trainingData, testData) = df.randomSplit([0.7, 0.3])
+    (train, test) = df.randomSplit([0.7, 0.3])
 
-    # Train a DecisionTree model.
-    dt = DecisionTreeClassifier(labelCol="indexedLabel", featuresCol="indexedFeatures")
-    pipeline = Pipeline(stages=[labelIndexer, featureIndexer, dt])
+    nb = NaiveBayes()
 
-    model = pipeline.fit(trainingData)
-    predictions = model.transform(testData)
+    model = nb.fit(train)
+    predictions = model.transform(test)
 
-    # Chain indexers and tree in a Pipeline
+
     df.show()
     print(df.schema)
-    splits = df.randomSplit([0.6, 0.4], 1234)
-    train = splits[0]
-    test = splits[1]
 
     # compute accuracy on the test set
-    evaluator = MulticlassClassificationEvaluator(labelCol="indexedLabel", predictionCol="prediction",
+    evaluator = MulticlassClassificationEvaluator(labelCol="label", predictionCol="prediction",
                                                   metricName="accuracy")
     accuracy = evaluator.evaluate(predictions)
     print("Test set accuracy = " + str(accuracy))
