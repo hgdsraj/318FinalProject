@@ -6,6 +6,10 @@ from pyspark import SparkContext
 from pyspark.ml.linalg import Vectors, VectorUDT
 from pyspark.sql import SparkSession, functions, types, Row
 from pyspark.sql.types import StructType, StructField, StringType, LongType
+from pyspark.ml import Pipeline
+from pyspark.ml.classification import DecisionTreeClassifier
+from pyspark.ml.feature import StringIndexer, VectorIndexer
+from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 
 def as_vector(col):
     sc = SparkContext.getOrCreate()
@@ -34,27 +38,7 @@ assert spark.version >= '2.2' # make sure we have Spark 2.2+
 
 cleaned_katkam = sys.argv[1] # 'cleaned-katkam'
 cleaned_weather = sys.argv[2] # 'cleaned-weather'
-def rain_gone(vs):
-    label = 0
-    if 'Clear' in vs:
-        label = 1
-    elif 'Cloudy' in vs:
-        label = 2
-    elif 'Fog' in vs:
-        label = 3
-    elif 'Drizzle' in vs:
-        label = 4
-    elif 'Moderate Rain' in vs:
-        label = 5
-    elif 'Rain Showers' in vs:
-        label = 7
-    elif 'Rain' in vs:
-        label = 6
-    elif 'Snow Showers' in vs:
-        label = 9
-    elif 'Snow' in vs:
-        label = 8
-    return label
+
 
 # All the labels:
 ## ['Cloudy', 'Rain Showers', 'Rain', 'Snow', 'Fog', 'Moderate Rain', 'Drizzle,Fog', 'Mostly Cloudy', 'Clear', 'Snow Showers', 'Mainly Clear', 'Rain,Drizzle', 'Drizzle']
@@ -67,24 +51,35 @@ def main():
     schema_file.close()
     weather = spark.read.csv(weather_in_directory, schema=schema)#.withColumn('filename', functions.input_file_name())
 
+
     df = df.join(weather, 'Date/Time')
     df.show()
     # https://stackoverflow.com/questions/39025707/how-to-convert-arraytype-to-densevector-in-pyspark-dataframe
     to_vec = functions.UserDefinedFunction(lambda vs: Vectors.dense(vs), VectorUDT())
-    get_rid_of_rain = functions.UserDefinedFunction(lambda vs: rain_gone(vs), LongType())
 
-    df = df.select(get_rid_of_rain(df['Weather']).alias('label'), to_vec(df['image']).alias('features'))
+    df = df.select(df['Weather'].alias('label'), to_vec(df['image']).alias('features'))
+    labelIndexer = StringIndexer(inputCol="label", outputCol="indexedLabel").fit(df)
+    # Automatically identify categorical features, and index them.
+    # We specify maxCategories so features with > 4 distinct values are treated as continuous.
+    featureIndexer = \
+        VectorIndexer(inputCol="features", outputCol="indexedFeatures", maxCategories=4).fit(df)
+
+    # Split the data into training and test sets (30% held out for testing)
+    (trainingData, testData) = df.randomSplit([0.7, 0.3])
+
+    # Train a DecisionTree model.
+    dt = DecisionTreeClassifier(labelCol="indexedLabel", featuresCol="indexedFeatures")
+    pipeline = Pipeline(stages=[labelIndexer, featureIndexer, dt])
+
+    model = pipeline.fit(trainingData)
+    predictions = model.transform(testData)
+
+    # Chain indexers and tree in a Pipeline
     df.show()
     print(df.schema)
     splits = df.randomSplit([0.6, 0.4], 1234)
     train = splits[0]
     test = splits[1]
-    #nb = NaiveBayes(smoothing=1.0, modelType="multinomial")
-    nb = LogisticRegression()
-
-    model = nb.fit(train)
-    predictions = model.transform(test)
-    predictions.show()
 
     # compute accuracy on the test set
     evaluator = MulticlassClassificationEvaluator(labelCol="label", predictionCol="prediction",
