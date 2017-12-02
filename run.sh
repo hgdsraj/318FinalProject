@@ -42,31 +42,21 @@ analyze() {
     spark-submit analysis.py cleaned-katkam-greyscale cleaned-weather
 }
 
-
-
-home_space()
-{
-    # Only the superuser can get this information
-
-    if [ "$(id -u)" = "0" ]; then
-        echo "<h2>Home directory space by user</h2>"
-        echo "<pre>"
-        echo "Bytes Directory"
-        du -s /home/* | sort -nr
-        echo "</pre>"
-    fi
-
-}   # end of home_space
-
+CLEAN_DFS=0
 SETUP=1
 CLEAN_WEATHER=1
 CLEAN_IMAGES=1
 ANALYZE=1
+
 for i in "$@"
 do
 case $i in
     --no-color)
     COLOR=0
+    shift # passed argument=value
+    ;;
+    --clean-dfs)
+    CLEAN_DFS=1
     shift # passed argument=value
     ;;
     --no-setup)
@@ -92,6 +82,9 @@ esac
 done
 if [ $SETUP = 1 ]; then
     setup
+fi
+if [ $CLEAN_DFS = 1 ]; then
+    remove_all
 fi
 
 if [ $CLEAN_WEATHER = 1 ]; then
