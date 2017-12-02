@@ -46,7 +46,7 @@ analyze_greyscale() {
 }
 
 analyze_rgb() {
-    spark-submit analysis.py cleaned-katkam-rgb cleaned-weather
+    spark-submit --conf spark.dynamicAllocation.enabled=false --conf spark.yarn.executor.memoryOverhead=10G --num-executors=100 analysis.py cleaned-rgb-greyscale cleaned-weather
 }
 
 CLEAN_DFS=0
