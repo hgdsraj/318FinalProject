@@ -34,10 +34,30 @@ assert spark.version >= '2.2' # make sure we have Spark 2.2+
 
 cleaned_katkam = sys.argv[1] # 'cleaned-katkam'
 cleaned_weather = sys.argv[2] # 'cleaned-weather'
-
 def rain_gone(vs):
-    return 0 if 'Rain' in vs else 1
+    label = 0
+    if 'Clear' in vs:
+        label = 1
+    elif 'Cloudy' in vs:
+        label = 2
+    elif 'Fog' in vs:
+        label = 3
+    elif 'Drizzle' in vs:
+        label = 4
+    elif 'Moderate Rain' in vs:
+        label = 5
+    elif 'Rain Showers' in vs:
+        label = 7
+    elif 'Rain' in vs:
+        label = 6
+    elif 'Snow Showers' in vs:
+        label = 9
+    elif 'Snow' in vs:
+        label = 8
+    return label
 
+# All the labels:
+## ['Cloudy', 'Rain Showers', 'Rain', 'Snow', 'Fog', 'Moderate Rain', 'Drizzle,Fog', 'Mostly Cloudy', 'Clear', 'Snow Showers', 'Mainly Clear', 'Rain,Drizzle', 'Drizzle']
 
 def main():
     df = spark.read.json(katkam_in_directory)
