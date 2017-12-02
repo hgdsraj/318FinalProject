@@ -1,5 +1,5 @@
 import sys
-from pyspark.ml.classification import NaiveBayes, LinearSVC, MultilayerPerceptronClassifier, LogisticRegression, OneVsRest
+from pyspark.ml.classification import NaiveBayes, LinearSVC, MultilayerPerceptronClassifier, LogisticRegression, OneVsRest, RandomForestClassifier, GBTClassifier, LogisticRegressionSummary
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark.sql.column import _to_java_column, _to_seq, Column
 from pyspark import SparkContext
@@ -73,15 +73,13 @@ def main():
     df.show()
     # Split the data into training and test sets (30% held out for testing)
     (train, test) = df.randomSplit([0.7, 0.3])
-
-    nb = NaiveBayes()
-
-    model = nb.fit(train)
-    predictions = model.transform(test)
-
-
     df.show()
     print(df.schema)
+
+    nb = LogisticRegressionSummary()
+    nb = DecisionTreeClassifier()
+    model = nb.fit(train)
+    predictions = model.transform(test)
 
     # compute accuracy on the test set
     evaluator = MulticlassClassificationEvaluator(labelCol="label", predictionCol="prediction",
