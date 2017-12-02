@@ -22,6 +22,7 @@ clean_weather() {
 remove_all() {
     hdfs dfs -rm -r -f cleaned-katkam-greyscale cleaned-weather headers katkam-greyscaled-json schema tempdir yvr-weather
 }
+
 write_katkam_json_greyscale() {
     python3 write_katkam_json.py katkam-scaled katkam-greyscaled-json 0
 }
@@ -35,7 +36,7 @@ put_katkam_with_time() {
 }
 
 add_time_to_image() {
-    spark-submit pair_images_by_time.py katkam-greyscaled-json cleaned-katkam-greyscale cleaned-weather
+    spark-submit pair_images_by_time.py katkam-greyscaled-json cleaned-weather cleaned-katkam-greyscale
 }
 
 analyze() {
