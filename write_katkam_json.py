@@ -3,6 +3,7 @@ import cv2
 import json
 import os
 import glob
+import numpy as np
 
 katkam_in_directory = sys.argv[1] # should be katkam-scaled
 out_directory = sys.argv[2] # should be katkam-<rgb/greyscaled>-json
@@ -24,9 +25,17 @@ def main():
     count = len(in_folder)
     for filename in in_folder:
         print(count)
-        img = cv2.imread(filename, int(rgb_flag)).flatten().tolist()
+        img = cv2.imread(filename, int(rgb_flag)).flatten()
+        r = np.zeros(len(img) // 3)
+        g = np.zeros(len(img) // 3)
+        b = np.zeros(len(img) // 3)
+        for i in range(0, len(img), 3):
+            r[i // 3] = img[i]
+            g[i // 3] = img[i + 1]
+            b[i // 3] = img[i + 2]
+        rgb_img = np.concatenate(r, g, b)
         with open('{}/{}'.format(out_directory, os.path.splitext(filename)[0][-21:]), 'w') as fp:
-            json.dump({'time':path_to_time(filename), 'image': img}, fp)
+            json.dump({'time':path_to_time(filename), 'image': np.array_repr(rgb_img)}, fp)
         count -= 1
 
 if __name__=='__main__':
