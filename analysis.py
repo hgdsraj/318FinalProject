@@ -85,10 +85,10 @@ def main():
     kmeans.fit(df)
 
     # Principal Component Analysis
-    pca = PCA(k=5)
-    model = pca.fit(df)
-    result = model.transform(df).select("pcaFeatures")
-    result.show(truncate=False); return
+    # pca = PCA(k=5)
+    # model = pca.fit(df)
+    # result = model.transform(df).select("pcaFeatures")
+    # result.show(truncate=False); return
 
 
     # Do machine learning
