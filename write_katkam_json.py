@@ -33,7 +33,7 @@ def main():
             r[i // 3] = img[i]
             g[i // 3] = img[i + 1]
             b[i // 3] = img[i + 2]
-        rgb_img = np.append(r, g, b)
+        rgb_img = np.array([r, g, b]).flatten()
         with open('{}/{}'.format(out_directory, os.path.splitext(filename)[0][-21:]), 'w') as fp:
             json.dump({'time':path_to_time(filename), 'image': np.array_repr(rgb_img)}, fp)
         count -= 1
