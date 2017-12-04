@@ -22,6 +22,7 @@ def main():
 
     # Read images from katkam-scaled folder, write to json and then read into spark -> avoids memory issues
     in_folder = glob.glob('{}/*.jpg'.format(katkam_in_directory))
+    print('Writing Images to JSON, this step will take some time!')
     count = len(in_folder)
     for filename in in_folder:
         print(count)
