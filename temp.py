@@ -1,6 +1,5 @@
 # pip3 install nose pillow keras h5py py4j
 import sys
-from pyspark.ml.classification import NaiveBayes, LinearSVC, MultilayerPerceptronClassifier, LogisticRegression, OneVsRest, RandomForestClassifier, GBTClassifier, LogisticRegressionSummary
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark.sql.column import _to_java_column, _to_seq, Column
 from pyspark import SparkContext
@@ -23,7 +22,7 @@ assert spark.version >= '2.2' # make sure we have Spark 2.2+
 
 from sparkdl import readImages
 
-img_dir = "katkam-min"
+img_dir = "katkam-scaled"
 
 #Read images and Create training & test DataFrames for transfer learning
 jobs_df = readImages(img_dir)
