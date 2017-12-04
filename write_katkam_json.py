@@ -11,7 +11,7 @@ rgb_flag = sys.argv[3] #  should be a 1 for rgb or 0 for greyscale
 def path_to_time(path):
     timestamp = os.path.splitext(path)[0][-14:]
     #2017-05-01 16:00
-    return "{}-{}-{} {}:00".format(timestamp[-14:-10], timestamp[-10:-8], timestamp[-8:-6], timestamp[-6:-4] )
+    return "{}-{}-{} {}:00".format(timestamp[-14:-10], timestamp[-10:-8], timestamp[-8:-6], timestamp[-6:-4])
 
 def main():
     try:
