@@ -7,10 +7,28 @@ __pycache__/
 *$py.class
 katkam-min
 katkam-min/*
-
+library.properties
+LICENSE-2.0.txt
+LICENSE_spark-images-0.1
+README_spark-images-0.1.md
+reflect.properties
+requirements.txt
+rootdoc.txt
+setup.py
+tensorframes
+tensorframes_snippets
+spark-warehouse
+sparkdl
+sparkimages
+META-INF
+com
+org
+scala
+tests
 # C extensions
 *.so
-
+spark-deep-learning-assembly-0.2.0-spark2.1.jar
+metastore_db
 # Distribution / packaging
 .Python
 env/
