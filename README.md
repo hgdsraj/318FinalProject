@@ -1,4 +1,4 @@
-# Spark image deep learning CMPT 318 Project
+# Spark image machine learning CMPT 318 Project
 ----------------------------------------------------------
 
 ## Prerequisites:
@@ -29,14 +29,19 @@ Explanations:
 
 `--no-color`
     - Run the analysis in Greyscale
+
 `--clean-dfs`
     - Delete the files we created on HDFS (but still run everything else as explained above)
+
 `--no-setup`
     - Do not load 318 module or install required packages (pip)
+
 `--no-clean-images`
     - Do not clean the images
+
 `--no-clean-weather`
     - Do not clean the weather data
+
 `--no-analyze`
     - Do not run the analysis
 
