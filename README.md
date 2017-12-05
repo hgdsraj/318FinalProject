@@ -27,25 +27,32 @@ The commands are not mutually exclusive, everything with "--no-" prepended will 
 
 Explanations:
 
-`--no-color`
+`--no-color`:
+
     - Run the analysis in Greyscale
 
-`--clean-dfs`
+`--clean-dfs`:
+
     - Delete the files we created on HDFS (but still run everything else as explained above)
 
-`--no-setup`
+`--no-setup`:
+
     - Do not load 318 module or install required packages (pip)
 
-`--no-clean-images`
+`--no-clean-images`:
+
     - Do not clean the images
 
-`--no-clean-weather`
+`--no-clean-weather`:
+    
     - Do not clean the weather data
 
-`--no-analyze`
+`--no-analyze`:
+
     - Do not run the analysis
 
 Example:
     To do analysis only on RGB
-        * ./run.sh --no-setup --no-clean-images --no-clean-weather
+    
+        - ./run.sh --no-setup --no-clean-images --no-clean-weather
 
