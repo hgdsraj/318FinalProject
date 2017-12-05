@@ -94,7 +94,7 @@ def main():
     kmeans = KMeans(k=8, seed=1)
     kmeans.fit(df)
     #TODO: try randomforest
-    rf = RandomForestClassifier(numTrees=20)
+    #rf = RandomForestClassifier(numTrees=20)
 
     # Logistic Regression Model
     lr = LogisticRegression()
@@ -102,7 +102,7 @@ def main():
 
     # create the trainer and set its parameters
     ml = MultilayerPerceptronClassifier(maxIter=100, layers=layers, blockSize=128, seed=1234)
-    models = [lr, rf, ml]
+    models = [lr, ml]
     model = [i.fit(train) for i in models]
     predictions = [i.transform(test) for i in model]
     [i.show() for i in predictions]
