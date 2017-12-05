@@ -1,5 +1,5 @@
 import sys
-from pyspark.ml.classification import NaiveBayes, LinearSVC, RandomForestClassifier, LogisticRegression, OneVsRest
+from pyspark.ml.classification import NaiveBayes, LinearSVC, RandomForestClassifier, LogisticRegression, OneVsRest, MultilayerPerceptronClassifier
 from pyspark.ml.clustering import KMeans
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark.sql.column import _to_java_column, _to_seq, Column
@@ -87,12 +87,7 @@ def main():
                    )
 
     df.show()
-    df.show()
     # TODO: Do KMeans clustering and data visualization
-    # kmeans = KMeans(k=8, seed=1)
-    # kmeans.fit(df)
-    # TODO: try randomforest
-    # RandomForestClassifier(numTrees=20)
 
     # Principal Component Analysis
     # pca = PCA(k=5)
@@ -107,22 +102,31 @@ def main():
     test = splits[1]
 
     # Naive Bayes Model
-    #nb = NaiveBayes(smoothing=1.0, modelType="multinomial")
+    nb = NaiveBayes(smoothing=1.0, modelType="multinomial")
+    kmeans = KMeans(k=8, seed=1)
+    kmeans.fit(df)
+    #TODO: try randomforest
+    rf = RandomForestClassifier(numTrees=20)
 
     # Logistic Regression Model
     lr = LogisticRegression()
+    layers = [147462, 5, 4, 10]
 
-    model = lr.fit(train)
-    predictions = model.transform(test)
-    predictions.show()
+    # create the trainer and set its parameters
+    ml = MultilayerPerceptronClassifier(maxIter=100, layers=layers, blockSize=128, seed=1234)
+    models = [lr, nb, rf, ml]
+    model = [i.fit(train) for i in models]
+    predictions = [i.transform(test) for i in model]
+    [i.show() for i in predictions]
 
     # compute accuracy on the test set
     evaluator = MulticlassClassificationEvaluator(labelCol="label", predictionCol="prediction",
                                                   metricName="accuracy")
-    accuracy = evaluator.evaluate(predictions)
-    for i in range(20):
-        print()
-    print("Test set accuracy = " + str(accuracy))
+    accuracy = [evaluator.evaluate(i) for i in predictions]
+    for g in accuracy:
+        for i in range(20):
+            print()
+        print("Test set accuracy = " + str(g))
 
 
 
