@@ -73,7 +73,7 @@ def main():
     def join_other_columns(x, *args):
 
         def if_none_then_0(y):
-            return float(y) if y is not None else float(0)
+            return float(y) if y is not None and float(y) > 0 else float(0)
 
         return x + [if_none_then_0(i) for i in args]
     #df.show()
