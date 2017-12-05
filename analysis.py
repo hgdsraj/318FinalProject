@@ -1,5 +1,5 @@
 import sys
-from pyspark.ml.classification import NaiveBayes, LinearSVC, MultilayerPerceptronClassifier, LogisticRegression, OneVsRest
+from pyspark.ml.classification import NaiveBayes, LinearSVC, RandomForestClassifier, LogisticRegression, OneVsRest
 from pyspark.ml.clustering import KMeans
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark.sql.column import _to_java_column, _to_seq, Column
@@ -7,6 +7,7 @@ from pyspark import SparkContext
 from pyspark.ml.linalg import Vectors, VectorUDT
 from pyspark.sql import SparkSession, functions, types
 from pyspark.ml.feature import PCA
+from pyspark.sql.types import ArrayType, DoubleType
 import matplotlib.pyplot as plt
 
 
@@ -65,20 +66,34 @@ def main():
     schema = types.StructType([types.StructField(i, types.StringType(), False) for i in schema_lines])
     schema_file.close()
     weather = spark.read.csv(weather_in_directory, schema=schema)#.withColumn('filename', functions.input_file_name())
-
     df = df.join(weather, 'Date/Time')
-    df.show()
     # https://stackoverflow.com/questions/39025707/how-to-convert-arraytype-to-densevector-in-pyspark-dataframe
     to_vec = functions.UserDefinedFunction(lambda vs: Vectors.dense(vs), VectorUDT())
     get_rid_of_rain = functions.UserDefinedFunction(lambda vs: rain_gone(vs), types.LongType())
+    def join_other_columns(x, *args):
+        arr = []
+        for i in args:
+            if i is not None:
+                arr.append(float(i))
+            else:
+                arr.append(float(0))
+        return x + arr
+    #df.show()
 
-    df = df.select(get_rid_of_rain(df['Weather']).alias('label'), to_vec(df['image']).alias('features'))
-    df.show()
-    print(df.schema)
+    with_other_columns = functions.UserDefinedFunction(lambda x, *args: join_other_columns(x, *args), ArrayType(DoubleType()))
+    #df.show()
+    df = df.select(get_rid_of_rain(df['Weather']).alias('label'), to_vec(with_other_columns(df['image'], df['Rel Hum (%)'],
+                                                       df['Temp (°C)'], df['Wind Dir (10s deg)'],
+                                                       df['Wind Spd (km/h)'], df['Visibility (km)'],
+                                                       df['Dew Point Temp (°C)']).alias('image')).alias('features')
+                   )
 
-    # Do KMeans clustering and data visualization
-    kmeans = KMeans(k=8, seed=1)
-    kmeans.fit(df)
+
+    # TODO: Do KMeans clustering and data visualization
+    # kmeans = KMeans(k=8, seed=1)
+    # kmeans.fit(df)
+    # TODO: try randomforest
+    # RandomForestClassifier(numTrees=20)
 
     # Principal Component Analysis
     # pca = PCA(k=5)
