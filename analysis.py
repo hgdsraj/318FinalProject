@@ -71,13 +71,11 @@ def main():
     to_vec = functions.UserDefinedFunction(lambda vs: Vectors.dense(vs), VectorUDT())
     get_rid_of_rain = functions.UserDefinedFunction(lambda vs: rain_gone(vs), types.LongType())
     def join_other_columns(x, *args):
-        arr = []
-        for i in args:
-            if i is not None:
-                arr.append(float(i))
-            else:
-                arr.append(float(0))
-        return x + arr
+
+        def if_none_then_0(y):
+            return float(y) if y is not None else float(0)
+
+        return x + [if_none_then_0(i) for i in args]
     #df.show()
 
     with_other_columns = functions.UserDefinedFunction(lambda x, *args: join_other_columns(x, *args), ArrayType(DoubleType()))
