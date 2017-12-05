@@ -70,21 +70,8 @@ def main():
     # https://stackoverflow.com/questions/39025707/how-to-convert-arraytype-to-densevector-in-pyspark-dataframe
     to_vec = functions.UserDefinedFunction(lambda vs: Vectors.dense(vs), VectorUDT())
     get_rid_of_rain = functions.UserDefinedFunction(lambda vs: rain_gone(vs), types.LongType())
-    def join_other_columns(x, *args):
-
-        def if_none_then_0(y):
-            # return float(y) if y is not None and float(y) > 0 else float(0) #naivebayes
-            return float(y) if y is not None else float(0)
-
-        return x + [if_none_then_0(i) for i in args]
     #df.show()
-
-    with_other_columns = functions.UserDefinedFunction(lambda x, *args: join_other_columns(x, *args), ArrayType(DoubleType()))
-    #df.show()
-    df = df.select(get_rid_of_rain(df['Weather']).alias('label'), to_vec(with_other_columns(df['image'], df['Rel Hum (%)'],
-                                                       df['Temp (°C)'], df['Wind Dir (10s deg)'],
-                                                       df['Wind Spd (km/h)'], df['Visibility (km)'],
-                                                       df['Dew Point Temp (°C)'])).alias('features')
+    df = df.select(get_rid_of_rain(df['Weather']).alias('label'), to_vec(df['image']).alias('features')
                    )
 
     df.show()

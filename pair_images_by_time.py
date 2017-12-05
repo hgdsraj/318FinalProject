@@ -22,7 +22,25 @@ def main():
     weather = spark.read.option('maxColumns', 100000).csv(weather_in_directory, schema=schema)
     df = df.select(df['time'].alias('Date/Time'), df['image'])
     df = weather.join(df, 'Date/Time')
-    df = df.select(df['Date/Time'], df['image'])
+    def join_other_columns(x, *args):
+
+        def if_none_then_0(y):
+            # return float(y) if y is not None and float(y) > 0 else float(0) #naivebayes
+            return float(y) if y is not None else float(0)
+
+        return x + [if_none_then_0(i) for i in args]
+    #df.show()
+    #https://stackoverflow.com/questions/29383107/how-to-change-column-types-in-spark-sqls-dataframe
+    df = df.withColumn("imageTmp", df.image.cast(ArrayType(DoubleType()))).drop("image")\
+        .withColumnRenamed("imageTmp", "image")
+    with_other_columns = functions.UserDefinedFunction(lambda x, *args: join_other_columns(x, *args), ArrayType(DoubleType()))
+    df = df.select(df['Date/Time'], with_other_columns(df['image'], df['Rel Hum (%)'],
+                                                                    df['Temp (°C)'], df['Wind Dir (10s deg)'],
+                                                                    df['Wind Spd (km/h)'], df['Visibility (km)'],
+                                                                    df['Dew Point Temp (°C)']).alias('features')
+               )
+    #df.show()
+
     df.write.json(out_directory, mode='overwrite')
 
     shutil.rmtree(katkam_in_directory) #remove tempdir
