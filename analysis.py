@@ -71,7 +71,7 @@ def main():
     to_vec = functions.UserDefinedFunction(lambda vs: Vectors.dense(vs), VectorUDT())
     get_rid_of_rain = functions.UserDefinedFunction(lambda vs: rain_gone(vs), types.LongType())
     #df.show()
-    df = df.select(get_rid_of_rain(df['Weather']).alias('label'), to_vec(df['image']).alias('features')
+    df = df.select(get_rid_of_rain(df['Weather']).alias('label'), to_vec(df['features']).alias('features')
                    )
 
     df.show()
