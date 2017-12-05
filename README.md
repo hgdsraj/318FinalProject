@@ -44,4 +44,3 @@ Example:
     To do analysis only on RGB
         * ./run.sh --no-setup --no-clean-images --no-clean-weather
 
-        
