@@ -36,7 +36,7 @@ def main():
             b[i // 3] = img[i + 2]
         rgb_img = np.array([r.astype(int), g.astype(int), b.astype(int)]).flatten()
         with open('{}/{}'.format(out_directory, os.path.splitext(filename)[0][-21:]), 'w') as fp:
-            json.dump({'time':path_to_time(filename), 'image': rgb_img.tolist()}, fp)
+            json.dump({'time':path_to_time(filename), 'image': np.array_str(rgb_img)}, fp)
         count -= 1
 
 if __name__=='__main__':
