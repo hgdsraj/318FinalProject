@@ -9,10 +9,6 @@ from pyspark.sql import SparkSession, functions, types
 from pyspark.ml.feature import PCA
 import matplotlib.pyplot as plt
 
-def as_vector(col):
-    sc = SparkContext.getOrCreate()
-    f = sc._jvm.com.example.spark.udfs.udfs.as_vector()
-    return Column(f.apply(_to_seq(sc, [col], _to_java_column)))
 
 schema = types.StructType([
     types.StructField('Date/Time', types.StringType(),True),
@@ -110,6 +106,8 @@ def main():
     evaluator = MulticlassClassificationEvaluator(labelCol="label", predictionCol="prediction",
                                                   metricName="accuracy")
     accuracy = evaluator.evaluate(predictions)
+    for i in range(20):
+        print()
     print("Test set accuracy = " + str(accuracy))
 
 
