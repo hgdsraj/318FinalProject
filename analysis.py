@@ -73,7 +73,8 @@ def main():
     def join_other_columns(x, *args):
 
         def if_none_then_0(y):
-            return float(y) if y is not None and float(y) > 0 else float(0)
+            # return float(y) if y is not None and float(y) > 0 else float(0) #naivebayes
+            return float(y) if y is not None else float(0)
 
         return x + [if_none_then_0(i) for i in args]
     #df.show()
@@ -102,7 +103,7 @@ def main():
     test = splits[1]
 
     # Naive Bayes Model
-    nb = NaiveBayes(smoothing=1.0, modelType="multinomial")
+    #nb = NaiveBayes(smoothing=1.0, modelType="multinomial")
     kmeans = KMeans(k=8, seed=1)
     kmeans.fit(df)
     #TODO: try randomforest
@@ -114,7 +115,7 @@ def main():
 
     # create the trainer and set its parameters
     ml = MultilayerPerceptronClassifier(maxIter=100, layers=layers, blockSize=128, seed=1234)
-    models = [lr, nb, rf, ml]
+    models = [lr, rf, ml]
     model = [i.fit(train) for i in models]
     predictions = [i.transform(test) for i in model]
     [i.show() for i in predictions]
