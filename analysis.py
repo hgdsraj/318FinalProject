@@ -83,10 +83,11 @@ def main():
     df = df.select(get_rid_of_rain(df['Weather']).alias('label'), to_vec(with_other_columns(df['image'], df['Rel Hum (%)'],
                                                        df['Temp (°C)'], df['Wind Dir (10s deg)'],
                                                        df['Wind Spd (km/h)'], df['Visibility (km)'],
-                                                       df['Dew Point Temp (°C)']).alias('image')).alias('features')
+                                                       df['Dew Point Temp (°C)'])).alias('features')
                    )
 
-
+    df.show()
+    df.show()
     # TODO: Do KMeans clustering and data visualization
     # kmeans = KMeans(k=8, seed=1)
     # kmeans.fit(df)
