@@ -20,7 +20,7 @@ clean_weather() {
 }
 
 remove_all() {
-    hdfs dfs -rm -r -f cleaned-katkam-greyscale cleaned-weather headers katkam-greyscaled-json schema tempdir yvr-weather
+    hdfs dfs -rm -r -f cleaned-katkam-greyscale katkam-rgb-json cleaned-weather headers katkam-greyscaled-json schema tempdir yvr-weather
 }
 
 write_katkam_json_greyscale() {
