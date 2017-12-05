@@ -13,7 +13,7 @@ clean_weather() {
     hdfs dfs -put tempdir tempdir
     hdfs dfs -put schema schema
     hdfs dfs -put header header
-    spark-submit weather_parse.py yvr-weather cleaned-weather tempdir
+    spark-submit --num-executors=100 --conf spark.dynamicAllocation.enabled=false --conf spark.yarn.executor.memoryOverhead=20G --conf spark.executor.memory=100G weather_parse.py yvr-weather cleaned-weather tempdir
     hdfs dfs -rm schema
     hdfs dfs -put schema schema
 
@@ -34,19 +34,19 @@ write_katkam_json_rgb() {
 }
 
 add_time_to_image_greyscale() {
-    spark-submit pair_images_by_time.py katkam-greyscaled-json cleaned-weather cleaned-katkam-greyscale
+    spark-submit  --conf spark.dynamicAllocation.enabled=false --conf spark.yarn.executor.memoryOverhead=20G --conf spark.executor.memory=100G --num-executors=100 pair_images_by_time.py katkam-greyscaled-json cleaned-weather cleaned-katkam-greyscale
 }
 
 add_time_to_image_rgb() {
-    spark-submit pair_images_by_time.py katkam-rgb-json cleaned-weather cleaned-katkam-rgb
+    spark-submit  --conf spark.dynamicAllocation.enabled=false --conf spark.yarn.executor.memoryOverhead=20G --conf spark.executor.memory=100G --num-executors=100 pair_images_by_time.py katkam-rgb-json cleaned-weather cleaned-katkam-rgb
 }
 
 analyze_greyscale() {
-    spark-submit  --conf spark.dynamicAllocation.enabled=false --conf spark.yarn.executor.memoryOverhead=10G --num-executors=100 analysis.py cleaned-katkam-greyscale cleaned-weather
+    spark-submit  --conf spark.dynamicAllocation.enabled=false --conf spark.yarn.executor.memoryOverhead=20G --conf spark.executor.memory=100G --num-executors=100 analysis.py cleaned-katkam-greyscale cleaned-weather
 }
 
 analyze_rgb() {
-    spark-submit --conf spark.dynamicAllocation.enabled=false --conf spark.yarn.executor.memoryOverhead=10G --num-executors=100 analysis.py cleaned-katkam-rgb cleaned-weather
+    spark-submit --conf spark.dynamicAllocation.enabled=false --conf spark.yarn.executor.memoryOverhead=20G --conf spark.executor.memory=100G --num-executors=100 analysis.py cleaned-katkam-rgb cleaned-weather
 }
 
 CLEAN_DFS=0
