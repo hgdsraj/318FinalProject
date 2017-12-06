@@ -1,11 +1,9 @@
 import sys
 import os
 from pyspark.sql import SparkSession, types, functions
-from pyspark.sql.types import DoubleType, IntegerType, LongType, FloatType, ArrayType,DataType
 from functools import reduce
-spark = SparkSession.builder.appName('Weather Image Classifier').getOrCreate()
+spark = SparkSession.builder.appName('Tide Data Cleaning').getOrCreate()
 import glob
-import re
 assert sys.version_info >= (3, 4) # make sure we have Python 3.4+
 assert spark.version >= '2.2' # make sure we have Spark 2.2+
 
@@ -14,7 +12,6 @@ out_directory = sys.argv[2] # should be tide-cleaned
 
 def path_to_time(path):
     timestamp = os.path.splitext(path)[0][-14:]
-    #2017-05-01 16:00
     return "{}-{}-{} {}:00".format(timestamp[-14:-10], timestamp[-10:-8], timestamp[-8:-6], timestamp[-6:-4] )
 
 def main():
