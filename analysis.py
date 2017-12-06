@@ -99,6 +99,14 @@ def main():
         print()
     print("Test set accuracy = " + str(accuracy))
 
+    # Write the final predictions dataframe to a CSV directory
+    spark.write.csv('final-output', predictions)
+
+    # Write the final accuracy score to a text file, tide analysis will write to the same file
+    with open('final-output/final-results.txt', 'w') as fp:
+        fp.write('Test set accuracy for weather analysis: ' + str(accuracy))
+    fp.close()
+
 
 
 if __name__=='__main__':
