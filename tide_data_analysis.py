@@ -25,7 +25,7 @@ def main():
     # https://stackoverflow.com/questions/39025707/how-to-convert-arraytype-to-densevector-in-pyspark-dataframe
     to_vec = functions.UserDefinedFunction(lambda vs: Vectors.dense(vs), VectorUDT())
     #df.show()
-    df = df.select(df['label'], to_vec(df['features']).alias('features'))
+    df = df.select(df['label'], to_vec(df['image']).alias('features'))
 
     df.show()
 
