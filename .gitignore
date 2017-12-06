@@ -132,5 +132,4 @@ katkam-greyscaled-json
 katkam-greyscaled-json/*
 weather-predictions
 weather-predictions/*
-tide-folder
 .idea
