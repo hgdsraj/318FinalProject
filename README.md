@@ -1,5 +1,10 @@
-# Spark image machine learning CMPT 318 Project
+# WeatherRaptor: Spark image machine learning CMPT 318 Project
+
+
+![](http://www.sfu.ca/~rmahey/raptor.png)
+
 ----------------------------------------------------------
+
 
 ## Prerequisites:
  - Spark installed (2.2+)
