@@ -14,16 +14,10 @@ schema = types.StructType([
     types.StructField('Date/Time', types.StringType(),True),
     types.StructField("image",VectorUDT(),False)
 ])
-#https://stackoverflow.com/questions/31477598/how-to-create-an-empty-dataframe-with-a-specified-schema
-
-# or df = sc.parallelize([]).toDF(schema)
-
-# Spark < 2.0
-# sqlContext.createDataFrame([], schema)
 
 katkam_in_directory = sys.argv[1] # should be either cleaned-katkam-grayscale or cleaned-katkam-rgb
 weather_in_directory = sys.argv[2] # should be cleaned-weather
-# out_directory = sys.argv[3] # will decide later what output will be, will probably be predictions
+out_directory = sys.argv[3] # will decide later what output will be, will probably be predictions
 
 spark = SparkSession.builder.appName('Weather Image Classifier - Data Analysis').getOrCreate()
 
@@ -73,8 +67,6 @@ def main():
     get_rid_of_rain = functions.UserDefinedFunction(lambda vs: rain_gone(vs), types.LongType())
 
     df = df.select(get_rid_of_rain(df['Weather']).alias('label'), to_vec(df['image']).alias('features'))
-    df.show()
-    print(df.schema)
 
     # Do machine learning
     splits = df.randomSplit([0.6, 0.4], 1234)
@@ -96,10 +88,10 @@ def main():
     accuracy = evaluator.evaluate(predictions)
 
     # Write the final predictions dataframe to a CSV directory
-    spark.write.json('final-output', predictions)
+    spark.write.json(out_directory, predictions)
 
     # Write the final accuracy score to a text file, tide analysis will write to the same file
-    with open('final-output/final-results.txt', 'w') as fp:
+    with open(out_directory + '/final-results.txt', 'w') as fp:
         fp.write('Test set accuracy for weather analysis: ' + str(accuracy))
     fp.close()
 
