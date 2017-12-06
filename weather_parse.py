@@ -28,7 +28,6 @@ def main(in_directory, out_path, tempdir):
     with open('schema', 'w+') as schema_out:
         schema_out.writelines([i + '\n' for i in weather_columns])
 
-
     weather.write.csv(out_path, mode='overwrite')
 
     shutil.rmtree(tmpdir) #remove tempdir

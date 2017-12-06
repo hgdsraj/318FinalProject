@@ -24,7 +24,6 @@ def main():
     df.show()
     # https://stackoverflow.com/questions/39025707/how-to-convert-arraytype-to-densevector-in-pyspark-dataframe
     to_vec = functions.UserDefinedFunction(lambda vs: Vectors.dense(vs), VectorUDT())
-    #df.show()
     df = df.select(df['label'], to_vec(df['features']).alias('features'))
 
     df.show()
@@ -36,7 +35,6 @@ def main():
 
     # Logistic Regression Model
     lr = LogisticRegression()
-    layers = [147462, 5, 4, 10]
 
     models = [lr]
     model = [i.fit(train) for i in models]
@@ -49,7 +47,7 @@ def main():
     accuracy = [evaluator.evaluate(i) for i in predictions]
 
     # Write the final predictions dataframe to a CSV directory
-    spark.write.json(out_directory, predictions)
+    predictions.write.json(out_directory, mode='overwrite')
 
     # Write the final accuracy score to a text file, tide analysis will write to the same file
     with open(out_directory + '/final-results.txt', 'w') as fp:
