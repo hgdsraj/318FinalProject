@@ -21,6 +21,7 @@
 `--no-clean-images`
 `--no-clean-weather`
 `--no-analyze`
+`--analyze-tides`
 
 The commands are not mutually exclusive, everything with "--no-" prepended will be run by default, other commands will be run on top of the other functions.
 
@@ -51,20 +52,12 @@ Explanations:
 
     - Do not run the analysis
 
+`--analyze-tides`:
+
+    - Run the tide-specific analysis instead of the regular analysis
+
 Example:
     To do analysis only on RGB
     
         - ./run.sh --no-setup --no-clean-images --no-clean-weather
-        
-        
-# To do Tide analysis:
-`./run.sh --no-analysis`
-
-`hdfs dfs -put tide-folder`
-
-`spark-submit tide_data_clean.py tide-folder tide-cleaned`
-
-`hdfs dfs -put tide-cleaned`
-
-`spark-submit --conf spark.dynamicAllocation.enabled=false --conf spark.yarn.executor.memoryOverhead=10G --conf spark.executor.memory=100G --num-executors=100 tide_data_analysis.py tide-cleaned cleaned-katkam-rgb`
 
