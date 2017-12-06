@@ -19,6 +19,12 @@ clean_weather() {
 
 }
 
+clean_tides() {
+    hdfs dfs -put tide-folder
+    spark-submit tide_data_clean.py tide-folder tide-cleaned
+    hdfs dfs -put tide-cleaned
+}
+
 remove_all() {
     hdfs dfs -rm -r -f cleaned-katkam-greyscale katkam-rgb-json cleaned-weather headers katkam-greyscaled-json schema tempdir yvr-weather
 }
@@ -41,6 +47,10 @@ add_time_to_image_rgb() {
     spark-submit  --conf spark.dynamicAllocation.enabled=false --conf spark.yarn.executor.memoryOverhead=10G --conf spark.executor.memory=100G --num-executors=100 pair_images_by_time.py katkam-rgb-json cleaned-weather cleaned-katkam-rgb
 }
 
+analyze_tides() {
+    spark-submit --conf spark.dynamicAllocation.enabled=false --conf spark.yarn.executor.memoryOverhead=10G --conf spark.executor.memory=100G --num-executors=100 tide_data_analysis.py tide-cleaned cleaned-katkam-rgb final-results-tides
+}
+
 analyze_greyscale() {
     spark-submit  --conf spark.dynamicAllocation.enabled=false --conf spark.yarn.executor.memoryOverhead=10G --conf spark.executor.memory=100G --num-executors=100 analysis.py cleaned-katkam-greyscale cleaned-weather final-results
 }
@@ -53,6 +63,7 @@ CLEAN_DFS=0
 SETUP=1
 CLEAN_WEATHER=1
 CLEAN_IMAGES=1
+CLEAN_TIDES=0
 ANALYZE=1
 COLOR=1
 
@@ -83,6 +94,12 @@ case $i in
     ANALYZE=0
     shift # passed argument with no value
     ;;
+    --analyze-tides)
+    ANALYZE=2
+    CLEAN_WEATHER=0
+    CLEAN_TIDES=1
+    shift # passed argument with no value
+    ;;
     *)
           # unknown option
     ;;
@@ -97,6 +114,10 @@ fi
 
 if [ $CLEAN_WEATHER = 1 ]; then
     clean_weather
+fi
+
+if [ $CLEAN_TIDES = 1 ]; then
+    clean_tides
 fi
 
 if [ $CLEAN_IMAGES = 1 ]; then
@@ -119,5 +140,9 @@ if [ $ANALYZE = 1 ]; then
     if [ $COLOR = 0 ]; then
         analyze_greyscale
     fi
+fi
+
+if [ $ANALYZE = 2 ]; then
+    analyze_tides
 fi
 
