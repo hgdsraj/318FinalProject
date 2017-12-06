@@ -1,5 +1,5 @@
 import sys
-from pyspark.ml.classification import NaiveBayes, LinearSVC, MultilayerPerceptronClassifier, LogisticRegression, OneVsRest
+from pyspark.ml.classification import NaiveBayes, LinearSVC, RandomForestClassifier, LogisticRegression, OneVsRest, MultilayerPerceptronClassifier
 from pyspark.ml.clustering import KMeans
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark.sql.column import _to_java_column, _to_seq, Column
@@ -7,6 +7,7 @@ from pyspark import SparkContext
 from pyspark.ml.linalg import Vectors, VectorUDT
 from pyspark.sql import SparkSession, functions, types
 from pyspark.ml.feature import PCA
+from pyspark.sql.types import ArrayType, DoubleType
 import matplotlib.pyplot as plt
 
 
@@ -65,16 +66,14 @@ def main():
     schema = types.StructType([types.StructField(i, types.StringType(), False) for i in schema_lines])
     schema_file.close()
     weather = spark.read.csv(weather_in_directory, schema=schema)#.withColumn('filename', functions.input_file_name())
-
     df = df.join(weather, 'Date/Time')
-    df.show()
     # https://stackoverflow.com/questions/39025707/how-to-convert-arraytype-to-densevector-in-pyspark-dataframe
     to_vec = functions.UserDefinedFunction(lambda vs: Vectors.dense(vs), VectorUDT())
     get_rid_of_rain = functions.UserDefinedFunction(lambda vs: rain_gone(vs), types.LongType())
+    #df.show()
+    df = df.select(get_rid_of_rain(df['Weather']).alias('label'), to_vec(df['features']).alias('features'))
 
-    df = df.select(get_rid_of_rain(df['Weather']).alias('label'), to_vec(df['image']).alias('features'))
-    df.show()
-    print(df.schema)
+    # TODO: Do KMeans clustering and data visualization
 
     # Do machine learning
     splits = df.randomSplit([0.6, 0.4], 1234)
@@ -84,20 +83,28 @@ def main():
     # Naive Bayes Model
     #nb = NaiveBayes(smoothing=1.0, modelType="multinomial")
 
+    #TODO: try randomforest
+    #rf = RandomForestClassifier(numTrees=20)
+
     # Logistic Regression Model
     lr = LogisticRegression()
+    layers = [147462, 5, 4, 10]
 
-    model = lr.fit(train)
-    predictions = model.transform(test)
-    predictions.show()
+    # create the trainer and set its parameters
+    ml = MultilayerPerceptronClassifier(maxIter=100, layers=layers, blockSize=128, seed=1234)
+    models = [lr, ml]
+    model = [i.fit(train) for i in models]
+    predictions = [i.transform(test) for i in model]
+    [i.show() for i in predictions]
 
     # compute accuracy on the test set
     evaluator = MulticlassClassificationEvaluator(labelCol="label", predictionCol="prediction",
                                                   metricName="accuracy")
-    accuracy = evaluator.evaluate(predictions)
-    for i in range(20):
-        print()
-    print("Test set accuracy = " + str(accuracy))
+    accuracy = [evaluator.evaluate(i) for i in predictions]
+    for g in accuracy:
+        for i in range(20):
+            print()
+        print("Test set accuracy = " + str(g))
 
     # Write the final predictions dataframe to a CSV directory
     spark.write.csv('final-output', predictions)
