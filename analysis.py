@@ -76,17 +76,6 @@ def main():
     df.show()
     print(df.schema)
 
-    # Do KMeans clustering and data visualization
-    kmeans = KMeans(k=8, seed=1)
-    kmeans.fit(df)
-
-    # Principal Component Analysis
-    # pca = PCA(k=5)
-    # model = pca.fit(df)
-    # result = model.transform(df).select("pcaFeatures")
-    # result.show(truncate=False); return
-
-
     # Do machine learning
     splits = df.randomSplit([0.6, 0.4], 1234)
     train = splits[0]
