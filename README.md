@@ -59,7 +59,10 @@ Example:
         
 # To do Tide analysis:
 `hdfs dfs -put tide-folder`
+
 `spark-submit tide_data_clean.py tide-folder tide-cleaned`
+
 `hdfs dfs -put tide-cleaned`
+
 `spark-submit --conf spark.dynamicAllocation.enabled=false --conf spark.yarn.executor.memoryOverhead=10G --conf spark.executor.memory=100G --num-executors=100 tide_data_analysis.py tide-cleaned cleaned-katkam-rgb`
 
