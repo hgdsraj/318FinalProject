@@ -58,6 +58,8 @@ Example:
         
         
 # To do Tide analysis:
+`./run.sh --no-analysis`
+
 `hdfs dfs -put tide-folder`
 
 `spark-submit tide_data_clean.py tide-folder tide-cleaned`
