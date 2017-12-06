@@ -110,7 +110,7 @@ celerybeat-schedule
 .venv
 venv/
 ENV/
-
+tide-cleaned
 # Spyder project settings
 .spyderproject
 
@@ -132,5 +132,5 @@ katkam-greyscaled-json
 katkam-greyscaled-json/*
 weather-predictions
 weather-predictions/*
-
+tide-folder
 .idea
