@@ -1,25 +1,9 @@
 import sys
-from pyspark.ml.classification import NaiveBayes, LinearSVC, MultilayerPerceptronClassifier, LogisticRegression, OneVsRest
-from pyspark.ml.clustering import KMeans
+from pyspark.ml.classification import LogisticRegression
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
-from pyspark.sql.column import _to_java_column, _to_seq, Column
-from pyspark import SparkContext
 from pyspark.ml.linalg import Vectors, VectorUDT
 from pyspark.sql import SparkSession, functions, types
-from pyspark.ml.feature import PCA
-import matplotlib.pyplot as plt
 
-
-schema = types.StructType([
-    types.StructField('Date/Time', types.StringType(),True),
-    types.StructField("image",VectorUDT(),False)
-])
-#https://stackoverflow.com/questions/31477598/how-to-create-an-empty-dataframe-with-a-specified-schema
-
-# or df = sc.parallelize([]).toDF(schema)
-
-# Spark < 2.0
-# sqlContext.createDataFrame([], schema)
 
 katkam_in_directory = sys.argv[1] # should be either cleaned-katkam-grayscale or cleaned-katkam-rgb
 weather_in_directory = sys.argv[2] # should be cleaned-weather
@@ -67,14 +51,12 @@ def main():
     weather = spark.read.csv(weather_in_directory, schema=schema)#.withColumn('filename', functions.input_file_name())
 
     df = df.join(weather, 'Date/Time')
-    df.show()
+
     # https://stackoverflow.com/questions/39025707/how-to-convert-arraytype-to-densevector-in-pyspark-dataframe
     to_vec = functions.UserDefinedFunction(lambda vs: Vectors.dense(vs), VectorUDT())
     get_rid_of_rain = functions.UserDefinedFunction(lambda vs: rain_gone(vs), types.LongType())
 
     df = df.select(get_rid_of_rain(df['Weather']).alias('label'), to_vec(df['image']).alias('features'))
-    df.show()
-    print(df.schema)
 
     # Do machine learning
     splits = df.randomSplit([0.6, 0.4], 1234)
