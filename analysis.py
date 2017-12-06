@@ -78,7 +78,7 @@ def main():
     accuracy = evaluator.evaluate(predictions)
 
     # Write the final predictions dataframe to a CSV directory
-    spark.write.csv('final-output', predictions)
+    spark.write.json('final-output', predictions)
 
     # Write the final accuracy score to a text file, tide analysis will write to the same file
     with open('final-output/final-results.txt', 'w') as fp:
