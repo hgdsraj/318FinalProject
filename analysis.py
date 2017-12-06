@@ -81,8 +81,8 @@ def main():
     predictions.write.json(out_directory, mode='overwrite')
 
     # Write the final accuracy score to a text file, tide analysis will write to the same file
-    fp = open(out_directory + '/final-results.txt', 'w')
-    fp.write('Test set accuracy for weather analysis: ' + str(accuracy))
+    with open(out_directory + '/final-results.txt', 'w+') as fp:
+        fp.write('Test set accuracy for weather analysis: ' + str(accuracy))
     fp.close()
 
 
