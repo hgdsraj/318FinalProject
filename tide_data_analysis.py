@@ -1,26 +1,8 @@
 import sys
-from pyspark.ml.classification import NaiveBayes, LinearSVC, RandomForestClassifier, LogisticRegression, OneVsRest, MultilayerPerceptronClassifier
-from pyspark.ml.clustering import KMeans
+from pyspark.ml.classification import  LogisticRegression
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
-from pyspark.sql.column import _to_java_column, _to_seq, Column
-from pyspark import SparkContext
 from pyspark.ml.linalg import Vectors, VectorUDT
 from pyspark.sql import SparkSession, functions, types
-from pyspark.ml.feature import PCA
-from pyspark.sql.types import ArrayType, DoubleType
-import matplotlib.pyplot as plt
-
-
-schema = types.StructType([
-    types.StructField('Date/Time', types.StringType(),True),
-    types.StructField("image",VectorUDT(),False)
-])
-#https://stackoverflow.com/questions/31477598/how-to-create-an-empty-dataframe-with-a-specified-schema
-
-# or df = sc.parallelize([]).toDF(schema)
-
-# Spark < 2.0
-# sqlContext.createDataFrame([], schema)
 
 tide_in_directory = sys.argv[1] # should be either cleaned-katkam-grayscale or cleaned-katkam-rgb
 katkam_in_directory = sys.argv[2] # should be cleaned-weather
@@ -30,8 +12,6 @@ spark = SparkSession.builder.appName('Weather Image Classifier - Data Analysis -
 
 assert sys.version_info >= (3, 4) # make sure we have Python 3.4+
 assert spark.version >= '2.2' # make sure we have Spark 2.2+
-
-
 
 def main():
     df = spark.read.json(katkam_in_directory)
@@ -48,14 +28,6 @@ def main():
     df = df.select(df['label'], to_vec(df['features']).alias('features'))
 
     df.show()
-    # TODO: Do KMeans clustering and data visualization
-
-    # Principal Component Analysis
-    # pca = PCA(k=5)
-    # model = pca.fit(df)
-    # result = model.transform(df).select("pcaFeatures")
-    # result.show(truncate=False); return
-
 
     # Do machine learning
     splits = df.randomSplit([0.6, 0.4], 1234)
