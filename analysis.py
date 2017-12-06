@@ -89,15 +89,19 @@ def main():
 
     model = lr.fit(train)
     predictions = model.transform(test)
-    predictions.show()
 
-    # compute accuracy on the test set
+    # Compute accuracy on the test set
     evaluator = MulticlassClassificationEvaluator(labelCol="label", predictionCol="prediction",
                                                   metricName="accuracy")
     accuracy = evaluator.evaluate(predictions)
-    for i in range(20):
-        print()
-    print("Test set accuracy = " + str(accuracy))
+
+    # Write the final predictions dataframe to a CSV directory
+    spark.write.json('final-output', predictions)
+
+    # Write the final accuracy score to a text file, tide analysis will write to the same file
+    with open('final-output/final-results.txt', 'w') as fp:
+        fp.write('Test set accuracy for weather analysis: ' + str(accuracy))
+    fp.close()
 
 
 
