@@ -47,17 +47,13 @@ def main():
     evaluator = MulticlassClassificationEvaluator(labelCol="label", predictionCol="prediction",
                                                   metricName="accuracy")
     accuracy = [evaluator.evaluate(i) for i in predictions]
-    for g in accuracy:
-        for i in range(20):
-            print()
-        print("Test set accuracy = " + str(g))
 
     # Write the final predictions dataframe to a CSV directory
     spark.write.json(out_directory, predictions)
 
     # Write the final accuracy score to a text file, tide analysis will write to the same file
     with open(out_directory + '/final-results.txt', 'w') as fp:
-        fp.write('Test set accuracy for weather analysis: ' + str(accuracy))
+        fp.write('Test set accuracy for tides analysis: ' + str(accuracy))
     fp.close()
 
 
