@@ -63,6 +63,7 @@ CLEAN_DFS=0
 SETUP=1
 CLEAN_WEATHER=1
 CLEAN_IMAGES=1
+CLEAN_TIDES=0
 ANALYZE=1
 COLOR=1
 
@@ -96,6 +97,7 @@ case $i in
     --analyze-tides)
     ANALYZE=2
     CLEAN_WEATHER=0
+    CLEAN_TIDES=1
     shift # passed argument with no value
     ;;
     *)
@@ -112,6 +114,10 @@ fi
 
 if [ $CLEAN_WEATHER = 1 ]; then
     clean_weather
+fi
+
+if [ $CLEAN_TIDES = 1 ]; then
+    clean_tides
 fi
 
 if [ $CLEAN_IMAGES = 1 ]; then
