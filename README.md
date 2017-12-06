@@ -1,4 +1,5 @@
-# Spark image machine learning CMPT 318 Project
+
+# WeatherRaptor: Spark image machine learning CMPT 318 Project
 ----------------------------------------------------------
 
 ## Prerequisites:
