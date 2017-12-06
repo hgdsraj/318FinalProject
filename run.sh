@@ -42,11 +42,11 @@ add_time_to_image_rgb() {
 }
 
 analyze_greyscale() {
-    spark-submit  --conf spark.dynamicAllocation.enabled=false --conf spark.yarn.executor.memoryOverhead=10G --conf spark.executor.memory=100G --num-executors=100 analysis.py cleaned-katkam-greyscale cleaned-weather
+    spark-submit  --conf spark.dynamicAllocation.enabled=false --conf spark.yarn.executor.memoryOverhead=10G --conf spark.executor.memory=100G --num-executors=100 analysis.py cleaned-katkam-greyscale cleaned-weather final-results
 }
 
 analyze_rgb() {
-    spark-submit --conf spark.dynamicAllocation.enabled=false --conf spark.yarn.executor.memoryOverhead=10G --conf spark.executor.memory=100G --num-executors=100 analysis.py cleaned-katkam-rgb cleaned-weather
+    spark-submit --conf spark.dynamicAllocation.enabled=false --conf spark.yarn.executor.memoryOverhead=10G --conf spark.executor.memory=100G --num-executors=100 analysis.py cleaned-katkam-rgb cleaned-weather final-results
 }
 
 CLEAN_DFS=0

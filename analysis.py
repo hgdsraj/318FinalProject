@@ -7,7 +7,7 @@ from pyspark.sql import SparkSession, functions, types
 
 katkam_in_directory = sys.argv[1] # should be either cleaned-katkam-grayscale or cleaned-katkam-rgb
 weather_in_directory = sys.argv[2] # should be cleaned-weather
-# out_directory = sys.argv[3] # will decide later what output will be, will probably be predictions
+out_directory = sys.argv[3] # should be final-results
 
 spark = SparkSession.builder.appName('Weather Image Classifier - Data Analysis').getOrCreate()
 
@@ -78,10 +78,10 @@ def main():
     accuracy = evaluator.evaluate(predictions)
 
     # Write the final predictions dataframe to a CSV directory
-    spark.write.json('final-output', predictions)
+    spark.write.json(out_directory, predictions)
 
     # Write the final accuracy score to a text file, tide analysis will write to the same file
-    with open('final-output/final-results.txt', 'w') as fp:
+    with open(out_directory + '/final-results.txt', 'w') as fp:
         fp.write('Test set accuracy for weather analysis: ' + str(accuracy))
     fp.close()
 
