@@ -13,14 +13,10 @@ def main(in_directory, out_path, tmpdir):
     schema_lines = [i.strip() for i in schema_file.readlines()]
     schema = types.StructType([types.StructField(i, types.StringType(), False) for i in schema_lines])
     schema_file.close()
-    # print(headers)
-    # print(schema)
+    
     weather = spark.read.csv(directory, schema=schema)#.withColumn('filename', functions.input_file_name())
-    # print(weather.schema)
     weather = weather[weather['Weather'] != 'NA']
-    # weather.show()
     weather_columns = [i for i in weather.schema.names if 'Flag' not in i]
-    # print(weather_columns)
     weather = weather.select(
         weather_columns
     )
