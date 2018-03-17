@@ -6,7 +6,7 @@ from pyspark.sql import SparkSession, functions, types
 
 tide_in_directory = sys.argv[1] # should be either cleaned-katkam-grayscale or cleaned-katkam-rgb
 katkam_in_directory = sys.argv[2] # should be cleaned-weather
-# out_directory = sys.argv[3] # will decide later what output will be, will probably be predictions
+out_directory = sys.argv[3] # will decide later what output will be, will probably be predictions
 
 spark = SparkSession.builder.appName('Weather Image Classifier - Data Analysis - Tides').getOrCreate()
 
@@ -24,8 +24,7 @@ def main():
     df.show()
     # https://stackoverflow.com/questions/39025707/how-to-convert-arraytype-to-densevector-in-pyspark-dataframe
     to_vec = functions.UserDefinedFunction(lambda vs: Vectors.dense(vs), VectorUDT())
-    #df.show()
-    df = df.select(df['label'], to_vec(df['image']).alias('features'))
+    df = df.select(df['label'], to_vec(df['features']).alias('features'))
 
     df.show()
 
@@ -36,7 +35,6 @@ def main():
 
     # Logistic Regression Model
     lr = LogisticRegression()
-    layers = [147462, 5, 4, 10]
 
     models = [lr]
     model = [i.fit(train) for i in models]
@@ -47,10 +45,14 @@ def main():
     evaluator = MulticlassClassificationEvaluator(labelCol="label", predictionCol="prediction",
                                                   metricName="accuracy")
     accuracy = [evaluator.evaluate(i) for i in predictions]
-    for g in accuracy:
-        for i in range(20):
-            print()
-        print("Test set accuracy = " + str(g))
+
+    # Write the final predictions dataframe to a CSV directory
+    predictions.write.json(out_directory, mode='overwrite')
+
+    # Write the final accuracy score to a text file, tide analysis will write to the same file
+    with open(out_directory + '/final-results.txt', 'w+') as fp:
+        fp.write('Test set accuracy for tides analysis: ' + str(accuracy))
+    fp.close()
 
 
 
